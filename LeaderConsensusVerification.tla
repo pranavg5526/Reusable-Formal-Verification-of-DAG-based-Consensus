@@ -1,8 +1,8 @@
-------------------- MODULE LeaderConsensusCMVerification -------------------
+------------------- MODULE LeaderConsensusVerification -------------------
 
 EXTENDS FiniteSets, 
         Integers, 
-        LeaderConsensusCMSpecification, 
+        LeaderConsensusSpecification, 
         SequenceOpTheorems,
         Sequences, 
         TLAPS, 
