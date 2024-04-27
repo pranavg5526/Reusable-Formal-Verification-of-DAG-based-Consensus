@@ -1,4 +1,4 @@
-------------------- MODULE LeaderConsensusCMSpecification -------------------
+------------------- MODULE LeaderConsensusSpecification -------------------
 (* The Leader Consensus Specification defines a state transition system     *)
 (* for wave leaders only, and its monotonicity and consistency properties.  *)
 
