@@ -1,6 +1,6 @@
------------------------ MODULE CordialDAGVerification -----------------------
+----------------------- MODULE CordialMinersVerification -----------------------
 
-EXTENDS CordialDAGSpecification,
+EXTENDS CordialMinersSpecification,
         FiniteSets,
         Integers,
         Sequences,
