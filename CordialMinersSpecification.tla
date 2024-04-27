@@ -1,4 +1,4 @@
----------------------- MODULE CordialDAGSpecification ----------------------
+---------------------- MODULE CordialMinersSpecification ----------------------
 
 EXTENDS FiniteSets,
         Integers,
