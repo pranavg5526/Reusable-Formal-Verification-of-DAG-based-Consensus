@@ -1,4 +1,4 @@
-------------------------- MODULE NonRBcommunication -------------------------
+------------------------- MODULE UnreliableBcastCommunicationSpecification -------------------------
 
 EXTENDS FiniteSets,
         Integers,
