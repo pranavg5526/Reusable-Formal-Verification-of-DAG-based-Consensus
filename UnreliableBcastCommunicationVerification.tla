@@ -1,6 +1,6 @@
-------------------- MODULE NonRBcommunicationVerification -------------------
+------------------- MODULE UnreliableBcastCommunicationVerification -------------------
 
-EXTENDS NonRBcommunication,
+EXTENDS UnreliableBcastCommunicationSpecification,
         FiniteSets,
         Integers,
         Sequences,
