@@ -16,7 +16,7 @@ EXTENDS FiniteSets,
 (* NumProcessors is the number of participating processes in the protocol. *)
 (* We assume this is non zero. We number processes 1 to NumProcessors,     *)
 (* and define ProcessorSet as the set of participating processes.          *) 
-(* We define maximum allowed process failures (NumFaultyProcessors) as the *)
+(* We define maximum allowed process failures (f) as the *)
 (* greatest integer less than one third of the total number of processes.  *)
 
 CONSTANT NumProcessors
@@ -24,7 +24,7 @@ CONSTANT NumProcessors
 ASSUME NumProcessorAsm == 
    NumProcessors \in Nat\{0}
 
-NumFaultyProcessors == 
+f == 
    (NumProcessors-1) \div 3
 
 ProcessorSet == 
@@ -217,6 +217,14 @@ InitRound ==
    round = [p \in ProcessorSet |-> 0]
 
 -----------------------------------------------------------------------------
+
+VARIABLE faulty
+
+FaultyType == 
+    faulty \in SUBSET(ProcessorSet)
+    
+InitFaulty ==
+    faulty = {}
 -----------------------------------------------------------------------------
 
 (*-------------------------STATE-TRANSITIONS-------------------------------*)
@@ -255,12 +263,9 @@ StrongPath(u, v) ==
 InAddedVertex(p, r) == 
    {v \in VertexSet : v.round = r /\ dag[p][r][v.source] = v}
 
-RECURSIVE UntilAddedVertex(_, _)
+UntilAddedVertex(p, r) == {v \in VertexSet : v.round <= r /\ dag[p][v.round][v.source] = v}
 
-UntilAddedVertex(p, r) == 
-   IF r = 0 
-   THEN InAddedVertex(p, r)
-   ELSE InAddedVertex(p, r) \cup UntilAddedVertex(p, r-1)
+AddedVertices(p) == {v \in VertexSet : dag[p][v.round][v.source] = v}
 
 NoPathVertices(p, r) == {v \in UntilAddedVertex(p, r) : 
                          (\A w \in InAddedVertex(p, r) : ~Path(w,v))}                         
@@ -269,12 +274,21 @@ WaveLeader(p, w) == dag[p][4*w-3][ChooseLeader(w)]
 
 -----------------------------------------------------------------------------
 
+ProcessFailureTn(p) == 
+  /\ Cardinality(faulty) < f
+  /\ p \notin faulty
+  /\ faulty' = faulty \cup {p}
+  /\ UNCHANGED <<blocksToPropose, broadcastNetwork, broadcastRecord, buffer, dag, 
+          round>>
+
+-----------------------------------------------------------------------------
+
 (* Transition ProposeTn(p, b) encodes process p proposing block b.         *)
 
 ProposeTn(p, b) == 
    /\ blocksToPropose' = [blocksToPropose EXCEPT 
          ![p] = Append(blocksToPropose[p], b)]
-   /\ UNCHANGED <<broadcastNetwork, broadcastRecord, buffer, dag, round>>
+   /\ UNCHANGED <<broadcastNetwork, broadcastRecord, buffer, dag, round, faulty>>
 
 -----------------------------------------------------------------------------
 
@@ -303,13 +317,14 @@ Broadcast(p, r, v) ==
 
 NextRoundTn(p) ==  
    /\ round[p]+1 \in RoundSet
-   /\ Cardinality(InAddedVertex(p, round[p])) > 2*NumFaultyProcessors
+   /\ Cardinality(InAddedVertex(p, round[p])) > 2*f
    /\ blocksToPropose[p] # <<>>
    /\ Broadcast(p, round[p]+1, CreateVertex(p, round[p]+1))
    /\ round' = [round EXCEPT ![p] = round[p]+1]
    /\ blocksToPropose' = [blocksToPropose EXCEPT 
          ![p] = Tail(blocksToPropose[p])]
-   /\ UNCHANGED <<buffer, dag>>
+   /\ UNCHANGED <<buffer, dag, faulty>>
+
 
 -----------------------------------------------------------------------------
 
@@ -318,14 +333,14 @@ NextRoundTn(p) ==
 
 ReceiveVertexTn(p, q, r, v) == 
    /\ [sender |-> q, inRound |-> r, vertex |-> v] \in broadcastNetwork[p]
-   /\ v.source = q
-   /\ v.round = r
-   /\ Cardinality(v.edges) > 2*NumFaultyProcessors
+   /\ p \notin faulty => v.source = q
+   /\ p \notin faulty => v.round = r
+   /\ p \notin faulty => Cardinality(v.edges) > 2*f
    /\ buffer' = [buffer EXCEPT ![p] = buffer[p] \cup {v}]
    /\ broadcastNetwork' = [broadcastNetwork EXCEPT 
          ![p] = broadcastNetwork[p] \ 
              {[sender |-> q, inRound |-> r, vertex |-> v]}]
-   /\ UNCHANGED <<blocksToPropose, broadcastRecord, dag, round>>
+   /\ UNCHANGED <<blocksToPropose, broadcastRecord, dag, round, faulty>>
 
 -----------------------------------------------------------------------------
 
@@ -335,19 +350,22 @@ ReceiveVertexTn(p, q, r, v) ==
 (* compute set of waves whose leader vertex in p, is in strong causal      *)
 (* history of v (ReachableWaveLeaders).                                    *)
 
-ReachableWaveLeaders(p, v) == 
-   {w \in WaveSet : StrongPath(v, WaveLeader(p, w))}
-
 AddVertexTn(p, v) == 
    /\ v \in buffer[p]
-   /\ v.round <= round[p]
-   /\ dag[p][v.round][v.source] = NilVertex(v.source, v.round)
-   /\ v.edges \in InAddedVertex(p, v.round -1)
+   /\ p \notin faulty => v.round <= round[p]
+   /\ p \notin faulty => dag[p][v.round][v.source] = NilVertex(v.source, v.round)
+   /\ p \notin faulty => v.edges \in InAddedVertex(p, v.round -1)
    /\ dag'= [dag EXCEPT ![p][v.round][v.source] = v]
    /\ UNCHANGED <<blocksToPropose, broadcastNetwork, 
-                  broadcastRecord, buffer, round>>
+                  broadcastRecord, buffer, round, faulty>>
 
 -----------------------------------------------------------------------------
+
+FaultyBcastTn(p ,v, r) ==
+   /\ p \in faulty
+   /\ Broadcast(p, r, v)
+   /\ UNCHANGED <<blocksToPropose, buffer, dag, round, faulty>>
+
 
 (*--------------------------TRANSITION-SYSTEM------------------------------*)
 
@@ -363,6 +381,7 @@ StateType ==
    /\ BufferType
    /\ DagType
    /\ RoundType
+   /\ FaultyType
 
 Init == 
    /\ InitBlocksToPropose
@@ -371,6 +390,7 @@ Init ==
    /\ InitBuffer
    /\ InitDag
    /\ InitRound
+   /\ InitFaulty
 
 Next == 
    \E p \in ProcessorSet, r \in RoundSet, v \in VertexSet, b \in BlockSet: 
@@ -379,9 +399,11 @@ Next ==
          \/ NextRoundTn(p)
          \/ ReceiveVertexTn(p, q, r, v)
          \/ AddVertexTn(p, v)
+         \/ ProcessFailureTn(p)
+         \/ FaultyBcastTn(p ,v, r)
 
 vars == <<blocksToPropose, broadcastNetwork, broadcastRecord, buffer, dag, 
-          round>>
+          round, faulty>>
 
 Spec == Init /\ [][Next]_vars
 
@@ -395,13 +417,12 @@ Spec == Init /\ [][Next]_vars
 
 DagConsistency == 
    \A p, q \in ProcessorSet, r \in RoundSet, o \in ProcessorSet: 
-     (/\ r # 0 
+     (/\ p \notin faulty
+      /\ q \notin faulty
+      /\ r # 0 
       /\ dag[p][r][o] \in VertexSet 
       /\ dag[q][r][o] \in VertexSet ) => dag[p][r][o] = dag[q][r][o]
 
 -----------------------------------------------------------------------------
 
 =============================================================================
-\* Modification History
-\* Last modified Sat Apr 27 09:08:44 CEST 2024 by Pranav
-\* Created Sat Apr 27 09:05:36 CEST 2024 by Pranav
