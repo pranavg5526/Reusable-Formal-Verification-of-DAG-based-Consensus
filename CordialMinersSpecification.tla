@@ -70,7 +70,7 @@ VARIABLE commitWithRef,
 -----------------------------------------------------------------------------
 
 LeaderConsensus == 
-   INSTANCE LeaderConsensusCMVerification 
+   INSTANCE LeaderConsensusVerification 
    WITH NumWaves <- w,
         NumProcessors <- n,
         f <- f,
