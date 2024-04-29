@@ -17,7 +17,7 @@ EXTENDS FiniteSets,
 (* NumProcessors is the number of participating processes in the protocol. *)
 (* We assume this is non zero. We number processes 1 to NumProcessors,     *)
 (* and define ProcessorSet as the set of participating processes.          *) 
-(* We define maximum allowed process failures (NumFaultyProcessors) as the *)
+(* We define maximum allowed process failures (f) as the *)
 (* greatest integer less than one third of the total number of processes.  *)
 
 CONSTANT NumProcessors
@@ -25,7 +25,7 @@ CONSTANT NumProcessors
 ASSUME NumProcessorAsm == 
    NumProcessors \in Nat\{0}
 
-NumFaultyProcessors == 
+f == 
    (NumProcessors-1) \div 3
 
 ProcessorSet == 
@@ -52,6 +52,9 @@ WaveSet ==
 RoundSet == 
    0..(4*NumWaves)
 
+
+LEMMA NonEmptyWaves == WaveSet # {}
+      BY NumWaveAsm DEF WaveSet
 -----------------------------------------------------------------------------
 
 (* BlockSet is a set of blocks that can be proposed by participating proc- *)
@@ -219,6 +222,15 @@ InitRound ==
 
 -----------------------------------------------------------------------------
 
+VARIABLE faulty
+
+FaultyType == 
+    faulty \in SUBSET(ProcessorSet)
+    
+InitFaulty ==
+    faulty = {}
+-----------------------------------------------------------------------------
+
 (* Since DAGRiderSpecification extends LeaderConsensusSpecification, we    *)
 (* additionally have the four variables (commitWithRef, decidedWave,       *)
 (* leaderReachablity, leaderSeq) from the LeaderConsensusSpecification.    *)
@@ -226,21 +238,23 @@ InitRound ==
 VARIABLE commitWithRef, 
          decidedWave,
          leaderReachablity,
-         leaderSeq
+         leaderSeq,
+         faultyLC
 
 -----------------------------------------------------------------------------
 
 LeaderConsensus == 
-   INSTANCE LeaderConsensusVerification 
+   INSTANCE FMLeaderConsensusVerification 
    WITH NumWaves <- NumWaves,
         NumProcessors <- NumProcessors,
+        f <- f,
         commitWithRef <- commitWithRef,
         decidedWave <- decidedWave,
         leaderReachablity <- leaderReachablity,
-        leaderSeq <- leaderSeq
+        leaderSeq <- leaderSeq,
+        faulty <- faultyLC
 
 -----------------------------------------------------------------------------
-
 (*-------------------------STATE-TRANSITIONS-------------------------------*)
 
 (* Before defining transitions we define some useful functions:            *)
@@ -277,17 +291,24 @@ StrongPath(u, v) ==
 InAddedVertex(p, r) == 
    {v \in VertexSet : v.round = r /\ dag[p][r][v.source] = v}
 
-RECURSIVE UntilAddedVertex(_, _)
+UntilAddedVertex(p, r) == {v \in VertexSet : v.round <= r /\ dag[p][v.round][v.source] = v}
 
-UntilAddedVertex(p, r) == 
-   IF r = 0 
-   THEN InAddedVertex(p, r)
-   ELSE InAddedVertex(p, r) \cup UntilAddedVertex(p, r-1)
+AddedVertices(p) == {v \in VertexSet : dag[p][v.round][v.source] = v}
 
 NoPathVertices(p, r) == {v \in UntilAddedVertex(p, r) : 
                          (\A w \in InAddedVertex(p, r) : ~Path(w,v))}                         
 
 WaveLeader(p, w) == dag[p][4*w-3][ChooseLeader(w)]
+
+-----------------------------------------------------------------------------
+
+ProcessFailureTn(p) == 
+  /\ Cardinality(faulty) < f
+  /\ p \notin faulty
+  /\ faulty' = faulty \cup {p}
+  /\ LeaderConsensus!ProcessFailureTn(p)
+  /\ UNCHANGED <<blocksToPropose, broadcastNetwork, broadcastRecord, buffer, dag, 
+          round>>
 
 -----------------------------------------------------------------------------
 
@@ -297,7 +318,7 @@ ProposeTn(p, b) ==
    /\ blocksToPropose' = [blocksToPropose EXCEPT 
          ![p] = Append(blocksToPropose[p], b)]
    /\ UNCHANGED LeaderConsensus!vars
-   /\ UNCHANGED <<broadcastNetwork, broadcastRecord, buffer, dag, round>>
+   /\ UNCHANGED <<broadcastNetwork, broadcastRecord, buffer, dag, round, faulty>>
 
 -----------------------------------------------------------------------------
 
@@ -326,14 +347,14 @@ Broadcast(p, r, v) ==
 ReadyWave(p, w) == 
    IF ( /\ WaveLeader(p, w) \in VertexSet 
         /\ \E Q \in SUBSET(InAddedVertex(p, 4*w)):
-              /\ Cardinality(Q) > 2*NumFaultyProcessors 
+              /\ Cardinality(Q) > 2*f 
               /\ \A u \in Q : StrongPath(u, WaveLeader(p, w)) )
    THEN LeaderConsensus!UpdateDecidedWaveTn(p, w)
    ELSE UNCHANGED LeaderConsensus!vars
 
 NextRoundTn(p) ==  
    /\ round[p]+1 \in RoundSet
-   /\ Cardinality(InAddedVertex(p, round[p])) > 2*NumFaultyProcessors
+   /\ Cardinality(InAddedVertex(p, round[p])) > 2*f
    /\ blocksToPropose[p] # <<>>
    /\ Broadcast(p, round[p]+1, CreateVertex(p, round[p]+1))
    /\ round' = [round EXCEPT ![p] = round[p]+1]
@@ -342,7 +363,8 @@ NextRoundTn(p) ==
    /\ IF round[p]>0 /\ (round[p] % 4) = 0 
       THEN ReadyWave(p, (round[p] \div 4)) 
       ELSE UNCHANGED LeaderConsensus!vars
-   /\ UNCHANGED <<buffer, dag>>
+   /\ UNCHANGED <<buffer, dag, faulty>>
+
 
 -----------------------------------------------------------------------------
 
@@ -351,15 +373,15 @@ NextRoundTn(p) ==
 
 ReceiveVertexTn(p, q, r, v) == 
    /\ [sender |-> q, inRound |-> r, vertex |-> v] \in broadcastNetwork[p]
-   /\ v.source = q
-   /\ v.round = r
-   /\ Cardinality(v.edges) > 2*NumFaultyProcessors
+   /\ p \notin faulty => v.source = q
+   /\ p \notin faulty => v.round = r
+   /\ p \notin faulty => Cardinality(v.edges) > 2*f
    /\ buffer' = [buffer EXCEPT ![p] = buffer[p] \cup {v}]
    /\ broadcastNetwork' = [broadcastNetwork EXCEPT 
          ![p] = broadcastNetwork[p] \ 
              {[sender |-> q, inRound |-> r, vertex |-> v]}]
    /\ UNCHANGED LeaderConsensus!vars
-   /\ UNCHANGED <<blocksToPropose, broadcastRecord, dag, round>>
+   /\ UNCHANGED <<blocksToPropose, broadcastRecord, dag, round, faulty>>
 
 -----------------------------------------------------------------------------
 
@@ -374,18 +396,27 @@ ReachableWaveLeaders(p, v) ==
 
 AddVertexTn(p, v) == 
    /\ v \in buffer[p]
-   /\ v.round <= round[p]
-   /\ dag[p][v.round][v.source] = NilVertex(v.source, v.round)
-   /\ v.edges \in InAddedVertex(p, v.round -1)
+   /\ p \notin faulty => v.round <= round[p]
+   /\ p \notin faulty => dag[p][v.round][v.source] = NilVertex(v.source, v.round)
+   /\ p \notin faulty => v.edges \in InAddedVertex(p, v.round -1)
    /\ dag'= [dag EXCEPT ![p][v.round][v.source] = v]
-   /\ IF v.round % 4 = 1 /\ v.source = ChooseLeader((v.round \div 4)+1) 
-      THEN LeaderConsensus!UpdateWaveTn(p, 
+   /\ IF p \notin faulty THEN 
+        IF v.round % 4 = 1 /\ v.source = ChooseLeader((v.round \div 4)+1) 
+        THEN LeaderConsensus!UpdateWaveTn(p, 
              (v.round \div 4)+1, ReachableWaveLeaders(p, v)) 
+        ELSE UNCHANGED LeaderConsensus!vars
       ELSE UNCHANGED LeaderConsensus!vars
    /\ UNCHANGED <<blocksToPropose, broadcastNetwork, 
-                  broadcastRecord, buffer, round>>
+                  broadcastRecord, buffer, round, faulty>>
 
 -----------------------------------------------------------------------------
+
+FaultyBcastTn(p ,v, r) ==
+   /\ p \in faulty
+   /\ Broadcast(p, r, v)
+   /\ UNCHANGED LeaderConsensus!vars
+   /\ UNCHANGED <<blocksToPropose, buffer, dag, round, faulty>>
+
 
 (*--------------------------TRANSITION-SYSTEM------------------------------*)
 
@@ -401,6 +432,7 @@ StateType ==
    /\ BufferType
    /\ DagType
    /\ RoundType
+   /\ FaultyType
 
 Init == 
    /\ InitBlocksToPropose
@@ -409,6 +441,7 @@ Init ==
    /\ InitBuffer
    /\ InitDag
    /\ InitRound
+   /\ InitFaulty
    /\ LeaderConsensus!Init
 
 Next == 
@@ -418,10 +451,11 @@ Next ==
          \/ NextRoundTn(p)
          \/ ReceiveVertexTn(p, q, r, v)
          \/ AddVertexTn(p, v)
+         \/ ProcessFailureTn(p)
+         \/ FaultyBcastTn(p ,v, r)
 
-vars == <<blocksToPropose, broadcastNetwork, broadcastRecord, buffer, 
-          commitWithRef, dag, decidedWave, leaderReachablity, leaderSeq, 
-          round>>
+vars == <<blocksToPropose, broadcastNetwork, broadcastRecord, buffer, dag, 
+          round, faulty, decidedWave, leaderReachablity, leaderSeq, faultyLC, commitWithRef>>
 
 Spec == Init /\ [][Next]_vars
 
@@ -435,7 +469,9 @@ Spec == Init /\ [][Next]_vars
 
 DagConsistency == 
    \A p, q \in ProcessorSet, r \in RoundSet, o \in ProcessorSet: 
-     (/\ r # 0 
+     (/\ p \notin faulty
+      /\ q \notin faulty
+      /\ r # 0 
       /\ dag[p][r][o] \in VertexSet 
       /\ dag[q][r][o] \in VertexSet ) => dag[p][r][o] = dag[q][r][o]
 
@@ -446,15 +482,16 @@ DagConsistency ==
 
 LeaderConsistency == 
    \A p, q \in ProcessorSet: 
-      decidedWave[p] <= decidedWave[q] => 
+      p \notin faultyLC /\ q \notin faultyLC /\ decidedWave[p] <= decidedWave[q] => 
          LeaderConsensus!IsPrefix(leaderSeq[p].current, leaderSeq[q].current)
 
 LeaderMonotonicity == 
-   \A p \in ProcessorSet: 
+   \A p \in ProcessorSet: p \notin faultyLC =>
       LeaderConsensus!IsPrefix(leaderSeq[p].last, leaderSeq[p].current)
 
 -----------------------------------------------------------------------------
 
 Safety == Spec => [](DagConsistency /\ LeaderConsistency /\ LeaderMonotonicity)
+
 
 =============================================================================
