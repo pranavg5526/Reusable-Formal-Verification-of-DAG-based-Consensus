@@ -1,4 +1,4 @@
--------------------- MODULE OPODISHashgraphSpecification --------------------
+-------------------- MODULE BinaryAgreementProtocolHashgraphSpecification --------------------
 
 EXTENDS FiniteSets,
         Integers,
