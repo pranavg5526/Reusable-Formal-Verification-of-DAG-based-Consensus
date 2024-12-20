@@ -1,4 +1,4 @@
--------------------- MODULE BinaryAgreementProtocolHashgraphSpecification --------------------
+-------------------- MODULE VVOrderingSpecification --------------------
 
 EXTENDS FiniteSets,
         Integers,
@@ -6,7 +6,7 @@ EXTENDS FiniteSets,
         TLAPS,
         TLC
 
-CONSTANTS r, f, c, WitnessSet
+CONSTANTS r, f, c, WitnessSet, faulty
 
 ASSUME natfAs == f \in Nat
 
@@ -55,6 +55,7 @@ InitVotes == Votes = [p \in ProcessSet |-> [e \in WitnessSet |-> [s \in WitnessS
 AddWitnessTn(p, e) == 
   /\ \A s \in e.stronglysees: s.frame = e.frame-1 /\ s \in WitnessDAG[p][s.frame][s.source] 
   /\ WitnessDAG' = [WitnessDAG EXCEPT![p][e.frame][e.source] = WitnessDAG[p][e.frame][e.source] \cup {e}]
+  /\ WitnessDAG' [p][e.frame][e.source] = WitnessDAG[p][e.frame][e.source] \cup {e}
   /\ Cardinality({q \in ProcessSet: \E a \in e.stronglysees: a.source = q /\ a.frame = e.frame-1 /\ a \in WitnessDAG[p][a.frame][a.source]})> 2*f
   /\ \A s \in WitnessSet: Votes[p][s][e] = "undecided" /\ Votes[p][e][s] = "undecided"
   /\ UNCHANGED <<Fame, DecidedFrames, Votes, FamousWitnesses>>
@@ -98,12 +99,14 @@ DecideFrameTn(p, x) ==
   /\ FamousWitnesses' = [FamousWitnesses EXCEPT ![p][x] = {e \in WitnessSet: e.frame = x /\ e \in WitnessDAG[p][x][e.source] /\ Fame[p][e] = TRUE}]
 
 --------------------------------------------------------------------------
+
 UniqueStronglyseenAs == \A p \in ProcessSet, q \in ProcessSet, e \in WitnessSet, a \in WitnessSet: 
-        (/\ a.frame = e.frame 
+        (/\ p \notin faulty /\ q \notin faulty
+         /\ a.frame = e.frame 
          /\ a.source = e.source 
          /\ \E s \in WitnessSet: s \in WitnessDAG[q][s.frame][s.source] /\ a \in s.stronglysees
          /\ \E l \in WitnessSet: l \in WitnessDAG[p][l.frame][l.source] /\ e \in l.stronglysees) => a = e
-
+       
 TypeOK == WitnessDAGType /\ VotesType /\ FameType /\ DecidedFramesType /\ FamousWitnessesType
 
 Init == InitWitnessDAG /\ InitVotes /\ InitFame /\ InitDecidedFrames /\ InitFamousWitnesses
@@ -117,14 +120,12 @@ Next == /\ UniqueStronglyseenAs
                      \/ DecideFameTn(p, s, e)
                      \/ VoteTn(p, s, e)
                      \/ DecideFrameTn(p, x)
-                                     
 
 Spec == Init /\ [][Next]_vars
-
 --------------------------------------------------------------------------  
 
 Safety == \A p \in ProcessSet, q \in ProcessSet, x \in Frames:
-              DecidedFrames[p][x] /\ DecidedFrames[q][x] => FamousWitnesses[p][x] = FamousWitnesses[q][x]
+              p \notin faulty /\ q \notin faulty /\ DecidedFrames[p][x] /\ DecidedFrames[q][x] => FamousWitnesses[p][x] = FamousWitnesses[q][x]
 
 -----------------------------------------------------------------------------
 =============================================================================
