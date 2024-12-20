@@ -1,4 +1,4 @@
--------------- MODULE ReliableBcastCommunicationSpecification --------------
+-------------- MODULE ReliableStructuredDAGconstructionSpecification --------------
 (* The DAG-Rider Specification defines a state transition system  for the  *)
 (* DAG-Rider protocol, and its safety properties. The article for the      *)
 (* protocol can be found here:   https://arxiv.org/abs/2102.08325          *)
