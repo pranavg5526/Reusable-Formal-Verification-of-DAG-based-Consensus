@@ -1,6 +1,6 @@
-------------------- MODULE UnreliableBcastCommunicationProofs -------------------
+------------------- MODULE UnreliableStructuredDAGconstructionProofs -------------------
 
-EXTENDS UnreliableBcastCommunicationSpecification,
+EXTENDS UnreliableStructuredDAGconstructionSpecification,
         FiniteSets,
         Integers,
         Sequences,
