@@ -1,6 +1,6 @@
----------------------- MODULE FMBullsharkProofs ----------------------
+---------------------- MODULE EventuallySyncBullSharkProofs ----------------------
 
-EXTENDS FMBullsharkSpecifcation,
+EXTENDS EventuallySyncBullSharkSpecifcation,
         FiniteSets,
         Integers,
         Sequences,
