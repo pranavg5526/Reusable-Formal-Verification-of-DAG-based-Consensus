@@ -1,8 +1,8 @@
-------------------- MODULE LeaderConsensusProofs -------------------
+------------------- MODULE GPCOrderingProofs -------------------
 
 EXTENDS FiniteSets, 
         Integers, 
-        LeaderConsensusSpecification, 
+        GPCOrderingSpecification, 
         SequenceOpTheorems,
         Sequences, 
         TLAPS, 
