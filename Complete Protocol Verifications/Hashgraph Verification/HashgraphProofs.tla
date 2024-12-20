@@ -1,6 +1,4 @@
--------------------------- MODULE Hashgraphproofs --------------------------
-
-
+-------------------------- MODULE HashgraphProofs --------------------------
 
 EXTENDS FiniteSets,
         Integers,
@@ -124,7 +122,7 @@ WitnessInv ==
 
 ---------------------------------------------------------------------------
 
-equalvar == witnessDAG = BAPWitnessDAG
+equalvar == witnessDAG = VVWitnessDAG
 
 --------------------------------------------------------------------------
 
@@ -512,18 +510,18 @@ LEMMA WitnessInvproof == Spec => []WitnessInv
 
 THEOREM Safety
  <1>1 ASSUME Init, TypeOK 
-      PROVE UniqueStronglyseen
-      BY <1>1, WitnessSetTypeAs DEF Init, TypeOK, Genesis, UniqueStronglyseen
- <1>2 ASSUME [Next]_vars, UniqueStronglyseen, TypeOK, HashgraphInv', WitnessInv'
-      PROVE UniqueStronglyseen'
+      PROVE StronglySeenConsistency
+      BY <1>1, WitnessSetTypeAs DEF Init, TypeOK, Genesis, StronglySeenConsistency
+ <1>2 ASSUME [Next]_vars, StronglySeenConsistency, TypeOK, HashgraphInv', WitnessInv'
+      PROVE StronglySeenConsistency'
       <3>2 ASSUME NEW p \in ProcessSet, NEW q \in ProcessSet, NEW x \in BlockIds, NEW E \in SUBSET(EventSet), FaultyChangeHashgraphTn(p, q, x, E)
-           PROVE UniqueStronglyseen'
-           BY <3>2, <1>2 DEF TypeOK, FaultyChangeHashgraphTn, UniqueStronglyseen
+           PROVE StronglySeenConsistency'
+           BY <3>2, <1>2 DEF TypeOK, FaultyChangeHashgraphTn, StronglySeenConsistency
       <3>3 ASSUME NEW p \in ProcessSet, NEW e \in EventSet, NEW z \in EventSet, ReceiveEventTn(e, p, z)
-           PROVE UniqueStronglyseen'
-           BY <3>3, <1>2 DEF TypeOK, ReceiveEventTn, UniqueStronglyseen
+           PROVE StronglySeenConsistency'
+           BY <3>3, <1>2 DEF TypeOK, ReceiveEventTn, StronglySeenConsistency
       <3>4 ASSUME NEW p \in ProcessSet, NEW e \in EventSet, DecideWitnessTn(e, p)
-           PROVE UniqueStronglyseen'
+           PROVE StronglySeenConsistency'
            <4>1 ASSUME NEW i \in ProcessSet, NEW j \in ProcessSet, NEW a \in WitnessSet, NEW b \in WitnessSet, NEW s \in WitnessSet, NEW l \in WitnessSet,
                 i \notin faulty, j \notin faulty, a.frame = b.frame, a.source = b.source, s \in witnessDAG'[j][s.frame][s.source], b \in s.stronglysees,
                 l \in witnessDAG'[i][l.frame][l.source], a \in l.stronglysees
@@ -541,19 +539,19 @@ THEOREM Safety
                                BY <4>1, <1>2, <3>4 DEF WitnessInv, DecideWitnessTn
                           <6> QED BY <6>1, <6>2, <6>3, <6>4, <4>1, <1>2, <4>1, WitnessSetTypeAs, <3>4 DEF HashgraphInv, DecideWitnessTn
                      <5> QED BY <5>1, <5>2
-           <4> QED BY <4>1, <3>4 DEF UniqueStronglyseen, DecideWitnessTn
+           <4> QED BY <4>1, <3>4 DEF StronglySeenConsistency, DecideWitnessTn
       <3>5 ASSUME UNCHANGED vars
-           PROVE UniqueStronglyseen'
-           BY <3>5, <1>2 DEF vars, UniqueStronglyseen
+           PROVE StronglySeenConsistency'
+           BY <3>5, <1>2 DEF vars, StronglySeenConsistency
       <3>6 ASSUME NEW p \in ProcessSet, NEW d \in WitnessSet, NEW g \in WitnessSet, DecideFameTn(p, g, d)
-           PROVE UniqueStronglyseen'
-           BY <1>2, <3>6 DEF vars1, DecideFameTn, UniqueStronglyseen
+           PROVE StronglySeenConsistency'
+           BY <1>2, <3>6 DEF vars1, DecideFameTn, StronglySeenConsistency
       <3>7 ASSUME NEW p \in ProcessSet, NEW d \in WitnessSet, NEW g \in WitnessSet, VoteTn(p, g, d)
-           PROVE UniqueStronglyseen'
-           BY <1>2, <3>7 DEF vars1, VoteTn, UniqueStronglyseen
+           PROVE StronglySeenConsistency'
+           BY <1>2, <3>7 DEF vars1, VoteTn, StronglySeenConsistency
       <3>8 ASSUME NEW p \in ProcessSet, NEW u \in Frames, NEW g \in WitnessSet, DecideFrameTn(p, u)
-           PROVE UniqueStronglyseen'
-           BY <1>2, <3>8 DEF vars1, DecideFrameTn, UniqueStronglyseen
+           PROVE StronglySeenConsistency'
+           BY <1>2, <3>8 DEF vars1, DecideFrameTn, StronglySeenConsistency
       <3> QED BY <3>2, <3>3, <3>4, <3>5, <1>2, <3>6, <3>7, <3>8 DEF Next 
  <1> QED BY <1>1, <1>2, PTL, TypeOKproof, HashgraphInvproof, WitnessInvproof DEF Spec, Safety
 
@@ -562,79 +560,85 @@ THEOREM Safety
 LEMMA equalVar == Spec => []equalvar
 <1>1 ASSUME Init
       PROVE equalvar
-      <2>1 /\ BAPOrdering!ProcessSet = ProcessSet
-           /\ BAPOrdering!Frames = Frames
-         BY DEF  BAPOrdering!ProcessSet, ProcessSet, BAPOrdering!Frames, Frames
-      <2> QED BY <1>1, <2>1 DEF Init, equalvar, BAPOrdering!Init, BAPOrdering!InitWitnessDAG
+      <2>1 /\ VVOrdering!ProcessSet = ProcessSet
+           /\ VVOrdering!Frames = Frames
+         BY DEF  VVOrdering!ProcessSet, ProcessSet, VVOrdering!Frames, Frames
+      <2> QED BY <1>1, <2>1 DEF Init, equalvar, VVOrdering!Init, VVOrdering!InitWitnessDAG
 <1>2 ASSUME [Next]_vars, equalvar
       PROVE equalvar'
       <3>2 ASSUME NEW p \in ProcessSet, NEW q \in ProcessSet, NEW x \in BlockIds, NEW E \in SUBSET(EventSet), FaultyChangeHashgraphTn(p, q, x, E)
            PROVE equalvar'
-           BY <3>2, <1>2 DEF FaultyChangeHashgraphTn, equalvar, BAPOrdering!vars
+           BY <3>2, <1>2 DEF FaultyChangeHashgraphTn, equalvar, VVOrdering!vars
       <3>3 ASSUME NEW p \in ProcessSet, NEW e \in EventSet, NEW z \in EventSet, ReceiveEventTn(e, p, z)
            PROVE equalvar'
-           BY <3>3, <1>2 DEF ReceiveEventTn, equalvar, BAPOrdering!vars
+           BY <3>3, <1>2 DEF ReceiveEventTn, equalvar, VVOrdering!vars
       <3>4 ASSUME NEW p \in ProcessSet, NEW e \in EventSet, DecideWitnessTn(e, p)
            PROVE equalvar'
-           BY <3>4, <1>2, WitnessSetAs, WitnessSetTypeAs DEF DecideWitnessTn, equalvar, BAPOrdering!AddWitnessTn
+           BY <3>4, <1>2, WitnessSetAs, WitnessSetTypeAs DEF DecideWitnessTn, equalvar, VVOrdering!AddWitnessTn
       <3>5 ASSUME UNCHANGED vars
            PROVE equalvar'
            BY <3>5, <1>2 DEF vars, equalvar
       <3>6 ASSUME NEW p \in ProcessSet, NEW d \in WitnessSet, NEW g \in WitnessSet, DecideFameTn(p, g, d)
            PROVE equalvar'
-           BY <1>2, <3>6 DEF vars1, DecideFameTn, equalvar, BAPOrdering!DecideFameTn
+           BY <1>2, <3>6 DEF vars1, DecideFameTn, equalvar, VVOrdering!DecideFameTn
       <3>7 ASSUME NEW p \in ProcessSet, NEW d \in WitnessSet, NEW g \in WitnessSet, VoteTn(p, g, d)
            PROVE equalvar'
-           BY <1>2, <3>7 DEF vars1, VoteTn, equalvar, BAPOrdering!VoteTn
+           BY <1>2, <3>7 DEF vars1, VoteTn, equalvar, VVOrdering!VoteTn
       <3>8 ASSUME NEW p \in ProcessSet, NEW u \in Frames, NEW g \in WitnessSet, DecideFrameTn(p, u)
            PROVE equalvar'
-           BY <1>2, <3>8 DEF vars1, DecideFrameTn, equalvar, BAPOrdering!DecideFrameTn
+           BY <1>2, <3>8 DEF vars1, DecideFrameTn, equalvar, VVOrdering!DecideFrameTn
       <3> QED BY <3>2, <3>3, <3>4, <3>5, <1>2, <3>6, <3>7, <3>8 DEF Next
  <1> QED BY <1>1, <1>2, PTL DEF Spec
  
-LEMMA SpecPreservingThm == Spec => BAPOrdering!Spec
- <1>1 Init => BAPOrdering!Init
+LEMMA SpecPreservingThm == Spec => VVOrdering!Spec
+ <1>1 Init => VVOrdering!Init
     BY DEF Init
- <1>2 ASSUME TypeOK, [Next]_vars, UniqueStronglyseen, UniqueStronglyseen', equalvar, equalvar' \*witnessDAG = BAPWitnessDAG \*, witnessDAG' = BAPWitnessDAG'
-      PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-      <2>1 BAPOrdering!UniqueStronglyseenAs /\ BAPOrdering!UniqueStronglyseenAs'
-            <3>1 /\ BAPOrdering!ProcessSet = ProcessSet
-                 /\ BAPOrdering!Frames = Frames
-               BY DEF  BAPOrdering!ProcessSet, ProcessSet, BAPOrdering!Frames, Frames
-            <3> QED BY <1>2, <3>1 DEF UniqueStronglyseen, BAPOrdering!UniqueStronglyseenAs, equalvar
+ <1>2 ASSUME TypeOK, [Next]_vars, StronglySeenConsistency, StronglySeenConsistency', equalvar, equalvar' \*witnessDAG = VVWitnessDAG \*, witnessDAG' = VVWitnessDAG'
+      PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+      <2>1 VVOrdering!UniqueStronglyseenAs /\ VVOrdering!UniqueStronglyseenAs'
+            <3>1 /\ VVOrdering!ProcessSet = ProcessSet
+                 /\ VVOrdering!Frames = Frames
+               BY DEF  VVOrdering!ProcessSet, ProcessSet, VVOrdering!Frames, Frames
+            <3> QED BY <1>2, <3>1 DEF StronglySeenConsistency, VVOrdering!UniqueStronglyseenAs, equalvar
       <2>2 ASSUME NEW p \in ProcessSet, NEW q \in ProcessSet, NEW  x \in BlockIds, NEW E \in SUBSET(EventSet), FaultyChangeHashgraphTn(p, q, x, E)
-           PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-           BY <2>2 DEF FaultyChangeHashgraphTn, BAPOrdering!vars
+           PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+           BY <2>2 DEF FaultyChangeHashgraphTn, VVOrdering!vars
       <2>3 ASSUME NEW e \in EventSet, NEW p \in ProcessSet, NEW z \in EventSet, ReceiveEventTn(e, p, z)
-           PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-           BY <2>3 DEF ReceiveEventTn, BAPOrdering!vars
+           PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+           BY <2>3 DEF ReceiveEventTn, VVOrdering!vars
       <2>4 ASSUME NEW e \in EventSet, NEW p \in ProcessSet, DecideWitnessTn(e, p)
-           PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-           <3>1 p \in BAPOrdering!ProcessSet /\ WitnessOfEvent(e) \in WitnessSet /\ BAPOrdering!AddWitnessTn(p, WitnessOfEvent(e)) /\ BAPOrdering!Frames # {}
-                BY  <2>4, frameAs, WitnessOfEventTypeAs DEF DecideWitnessTn, Frames, BAPOrdering!ProcessSet, ProcessSet, BAPOrdering!Frames, Frames
-           <3> QED BY <3>1, <2>1 DEF BAPOrdering!Next
+           PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+           <3>1 p \in VVOrdering!ProcessSet /\ WitnessOfEvent(e) \in WitnessSet /\ VVOrdering!AddWitnessTn(p, WitnessOfEvent(e)) /\ VVOrdering!Frames # {}
+                BY  <2>4, frameAs, WitnessOfEventTypeAs DEF DecideWitnessTn, Frames, VVOrdering!ProcessSet, ProcessSet, VVOrdering!Frames, Frames
+           <3> QED BY <3>1, <2>1 DEF VVOrdering!Next
       <2>5 ASSUME NEW p \in ProcessSet, NEW d \in WitnessSet, NEW g \in WitnessSet, DecideFameTn(p, g, d)
-           PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-           <3>1 p \in BAPOrdering!ProcessSet /\ d \in WitnessSet /\ g \in WitnessSet /\ BAPOrdering!DecideFameTn(p, g, d) /\ BAPOrdering!Frames # {}
-                BY <2>5, frameAs DEF DecideFameTn, Frames, BAPOrdering!ProcessSet, ProcessSet, BAPOrdering!Frames, Frames
-           <3> QED BY <3>1, <2>1 DEF BAPOrdering!Next
+           PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+           <3>1 p \in VVOrdering!ProcessSet /\ d \in WitnessSet /\ g \in WitnessSet /\ VVOrdering!DecideFameTn(p, g, d) /\ VVOrdering!Frames # {}
+                BY <2>5, frameAs DEF DecideFameTn, Frames, VVOrdering!ProcessSet, ProcessSet, VVOrdering!Frames, Frames
+           <3> QED BY <3>1, <2>1 DEF VVOrdering!Next
       <2>6 ASSUME NEW p \in ProcessSet, NEW d \in WitnessSet, NEW g \in WitnessSet, VoteTn(p, g, d)
-           PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-           <3>1 p \in BAPOrdering!ProcessSet /\ d \in WitnessSet /\ g \in WitnessSet /\ BAPOrdering!VoteTn(p, g, d) /\ BAPOrdering!Frames # {}
-                BY <2>6, frameAs DEF VoteTn, Frames, BAPOrdering!ProcessSet, ProcessSet, BAPOrdering!Frames, Frames
-           <3> QED BY <3>1, <2>1 DEF BAPOrdering!Next
+           PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+           <3>1 p \in VVOrdering!ProcessSet /\ d \in WitnessSet /\ g \in WitnessSet /\ VVOrdering!VoteTn(p, g, d) /\ VVOrdering!Frames # {}
+                BY <2>6, frameAs DEF VoteTn, Frames, VVOrdering!ProcessSet, ProcessSet, VVOrdering!Frames, Frames
+           <3> QED BY <3>1, <2>1 DEF VVOrdering!Next
       <2>7 ASSUME NEW p \in ProcessSet, NEW u \in Frames, NEW g \in WitnessSet, DecideFrameTn(p, u)
-           PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-           <3>1 p \in BAPOrdering!ProcessSet /\ g \in WitnessSet /\ BAPOrdering!DecideFrameTn(p, u) /\ u \in BAPOrdering!Frames
-                BY <2>7, frameAs DEF DecideFrameTn, Frames, BAPOrdering!ProcessSet, ProcessSet, BAPOrdering!Frames, Frames
-           <3> QED BY <3>1, <2>1 DEF BAPOrdering!Next
+           PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+           <3>1 p \in VVOrdering!ProcessSet /\ g \in WitnessSet /\ VVOrdering!DecideFrameTn(p, u) /\ u \in VVOrdering!Frames
+                BY <2>7, frameAs DEF DecideFrameTn, Frames, VVOrdering!ProcessSet, ProcessSet, VVOrdering!Frames, Frames
+           <3> QED BY <3>1, <2>1 DEF VVOrdering!Next
       <2>8 ASSUME UNCHANGED vars
-           PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-           BY <2>8 DEF vars, BAPOrdering!vars
+           PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+           BY <2>8 DEF vars, VVOrdering!vars
       <2> QED BY  <2>2, <2>3, <2>4, <2>5, <2>6, <2>7, <2>8, <1>2 DEF Next
- <1> QED BY <1>1, <1>2, PTL, Safety, TypeOKproof, equalVar DEF Spec, BAPOrdering!Spec
+ <1> QED BY <1>1, <1>2, PTL, Safety, TypeOKproof, equalVar DEF Spec, VVOrdering!Spec
  
-
+LEMMA HashgraphSafety == Spec => []Safety
+   <1>1 Safety = VVOrdering!Safety
+         BY DEF Safety, VVOrdering!Safety, VVOrdering!ProcessSet, ProcessSet, VVOrdering!Frames, Frames
+   <1>2 Spec => []VVOrdering!Safety
+         BY VVOrdering!safetyproof, SpecPreservingThm, fAs, rAs, cAs
+   <1> QED BY <1>1, <1>2, VVOrdering!safetyproof, SpecPreservingThm, PTL DEF Safety, VVOrdering!Safety
+   
 =============================================================================
 \* Modification History
 \* Last modified Tue Dec 10 18:19:00 AEDT 2024 by pgho0778
