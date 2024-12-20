@@ -148,13 +148,13 @@ LEMMA TypeLem == Spec => []StateType
            BY <2>8, <2>1, <1>2, VertexSetDefPlt DEF FaultyBcastTn, TaggedVertexSet, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>9 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, DecideFameTn(p, g, d)
            PROVE StateType'
-           BY <1>2, <2>9 DEF vars1, DecideFameTn, StateType, BAPOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>9 DEF vars1, DecideFameTn, StateType, VVOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>10 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, VoteTn(p, g, d)
            PROVE StateType'
-           BY <1>2, <2>10 DEF vars1, VoteTn, StateType, BAPOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>10 DEF vars1, VoteTn, StateType, VVOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>11 ASSUME NEW p \in ProcessorSet, NEW u \in RoundSet, NEW g \in VertexSet, DecideFrameTn(p, u)
            PROVE StateType'
-           BY <1>2, <2>11 DEF vars1, DecideFrameTn, StateType, BAPOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>11 DEF vars1, DecideFrameTn, StateType, VVOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2> QED  BY <2>2, <2>3, <2>4, <2>5, <2>6, <1>2, <2>8, <2>9, <2>10, <2>11 DEF Next
  <1> QED BY <1>1, <1>2, PTL DEF Spec
 
@@ -207,13 +207,13 @@ LEMMA IndInv1Lem == Spec => []IndInv1
            BY <2>8, <2>1, <1>2, VertexSetDefPlt DEF IndInv1, FaultyBcastTn, TaggedVertexSet, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>9 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, DecideFameTn(p, g, d)
            PROVE IndInv1'
-           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv1, BAPOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv1, VVOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>10 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, VoteTn(p, g, d)
            PROVE IndInv1'
-           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv1, BAPOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv1, VVOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>11 ASSUME NEW p \in ProcessorSet, NEW u \in RoundSet, NEW g \in VertexSet, DecideFrameTn(p, u)
            PROVE IndInv1'
-           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv1, BAPOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv1, VVOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2> QED  BY <2>1, <2>2, <2>3, <2>4, <2>5, <1>2, <2>8, <2>9, <2>10, <2>11 DEF Next
  <1> QED BY <1>1, <1>2, TypeLem, PTL DEF Spec
 
@@ -313,13 +313,13 @@ LEMMA IndInv2Lem == Spec => []IndInv2
            <3> QED BY <3>1, <2>8 DEF FaultyBcastTn
       <2>9 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, DecideFameTn(p, g, d)
            PROVE IndInv2'
-           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv2, BAPOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv2, VVOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>10 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, VoteTn(p, g, d)
            PROVE IndInv2'
-           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv2, BAPOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv2, VVOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>11 ASSUME NEW p \in ProcessorSet, NEW u \in RoundSet, NEW g \in VertexSet, DecideFrameTn(p, u)
            PROVE IndInv2'
-           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv2, BAPOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv2, VVOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2> QED  BY <2>1,  <2>2, <2>3, <2>4, <2>5, <1>2, <2>8, <2>9, <2>10, <2>11 DEF Next
  <1> QED BY <1>1, <1>2, TypeLem, PTL DEF Spec
 
@@ -353,13 +353,13 @@ LEMMA IndInv3Lem == Spec => []IndInv3
            BY VertexSetDefPlt, <2>8, <1>2 DEF IndInv3, FaultyBcastTn, Broadcast
       <2>9 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, DecideFameTn(p, g, d)
            PROVE IndInv3'
-           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv3, BAPOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv3, VVOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>10 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, VoteTn(p, g, d)
            PROVE IndInv3'
-           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv3, BAPOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv3, VVOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>11 ASSUME NEW p \in ProcessorSet, NEW u \in RoundSet, NEW g \in VertexSet, DecideFrameTn(p, u)
            PROVE IndInv3'
-           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv3, BAPOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv3, VVOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2> QED  BY <2>1, <2>2, <2>3, <2>4, <2>5, <1>2, <2>8, <2>9, <2>10, <2>11 DEF Next
  <1> QED BY <1>1, <1>2, TypeLem, PTL DEF Spec
 
@@ -416,13 +416,13 @@ LEMMA IndInv4Lem == Spec => []IndInv4
            BY VertexSetDefPlt, <2>8, <1>2 DEF IndInv4, FaultyBcastTn, Broadcast
       <2>9 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, DecideFameTn(p, g, d)
            PROVE IndInv4'
-           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv4, BAPOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv4, VVOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>10 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, VoteTn(p, g, d)
            PROVE IndInv4'
-           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv4, BAPOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv4, VVOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>11 ASSUME NEW p \in ProcessorSet, NEW u \in RoundSet, NEW g \in VertexSet, DecideFrameTn(p, u)
            PROVE IndInv4'
-           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv4, BAPOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv4, VVOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2> QED  BY <2>1, <2>2, <2>3, <2>4, <2>5, <1>2, <2>8, <2>9, <2>10, <2>11 DEF Next
  <1> QED BY <1>1, <1>2, TypeLem, IndInv3Lem, PTL DEF Spec
 
@@ -559,13 +559,13 @@ LEMMA IndInv6Lem == Spec => []IndInv6
            BY VertexSetDefPlt, <2>8, <1>2 DEF IndInv6, FaultyBcastTn, Broadcast
       <2>9 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, DecideFameTn(p, g, d)
            PROVE IndInv6'
-           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv6, BAPOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>9 DEF vars1, DecideFameTn, IndInv6, VVOrdering!DecideFameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>10 ASSUME NEW p \in ProcessorSet, NEW d \in VertexSet, NEW g \in VertexSet, VoteTn(p, g, d)
            PROVE IndInv6'
-           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv6, BAPOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>10 DEF vars1, VoteTn, IndInv6, VVOrdering!VoteTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2>11 ASSUME NEW p \in ProcessorSet, NEW u \in RoundSet, NEW g \in VertexSet, DecideFrameTn(p, u)
            PROVE IndInv6'
-           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv6, BAPOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
+           BY <1>2, <2>11 DEF vars1, DecideFrameTn, IndInv6, VVOrdering!DecideFrameTn, StateType, BlocksToProposeType, BroadcastNetworkType, BroadcastRecordType, BufferType, DagType, RoundType
       <2> QED  BY <2>1, <2>2, <2>3, <2>4, <2>5, <1>2, <2>8, <2>9, <2>10, <2>11 DEF Next
  <1> QED BY <1>1, <1>2, TypeLem, PTL DEF Spec
 
@@ -625,11 +625,11 @@ LEMMA Inv7proof == Spec => []Inv7
          \/ VoteTn(p, u, v)
          \/ DecideFrameTn(p, r)) => Inv7'
          <3>1 ProposeTn(p, b) => Inv7'
-              BY <1>2, <2>1 DEF ProposeTn, vars, BAPOrdering!vars, Inv7
+              BY <1>2, <2>1 DEF ProposeTn, vars, VVOrdering!vars, Inv7
          <3>2 NextRoundTn(p) => Inv7'
-              BY <1>2, <2>1 DEF NextRoundTn, vars, BAPOrdering!vars, Inv7
+              BY <1>2, <2>1 DEF NextRoundTn, vars, VVOrdering!vars, Inv7
          <3>3 ReceiveVertexTn(p, q, r, v) => Inv7'
-              BY <1>2, <2>1 DEF ReceiveVertexTn, vars, BAPOrdering!vars, Inv7
+              BY <1>2, <2>1 DEF ReceiveVertexTn, vars, VVOrdering!vars, Inv7
          <3>4 ASSUME AddVertexTn(p, v) PROVE Inv7'
               <4>1 ASSUME  NEW p_1 \in ProcessorSet, NEW s_1 \in VertexSet, NEW a_1 \in s_1.strongedges, p_1 \notin faulty, s_1 = dag'[p_1][s_1.round][s_1.source]
                    PROVE a_1 = dag'[p_1][a_1.round][a_1.source]
@@ -650,25 +650,25 @@ LEMMA Inv7proof == Spec => []Inv7
                    <5> QED BY <5>1, <5>2
               <4> QED BY <4>1 DEF Inv7
          <3>5 FaultyBcastTn(p ,v, r) => Inv7'
-              BY <1>2, <2>1 DEF FaultyBcastTn, vars, BAPOrdering!vars, Inv7
+              BY <1>2, <2>1 DEF FaultyBcastTn, vars, VVOrdering!vars, Inv7
          <3>6 DecideFameTn(p, u, v) => Inv7'
-              BY <1>2, <2>1 DEF DecideFameTn, vars1, BAPOrdering!DecideFameTn, Inv7
+              BY <1>2, <2>1 DEF DecideFameTn, vars1, VVOrdering!DecideFameTn, Inv7
          <3>7 VoteTn(p, u, v) => Inv7'
-              BY <1>2, <2>1 DEF VoteTn, vars1, BAPOrdering!VoteTn, Inv7
+              BY <1>2, <2>1 DEF VoteTn, vars1, VVOrdering!VoteTn, Inv7
          <3>8 DecideFrameTn(p, r) => Inv7'
-              BY <1>2, <2>1 DEF DecideFrameTn, vars1, BAPOrdering!DecideFrameTn, Inv7
+              BY <1>2, <2>1 DEF DecideFrameTn, vars1, VVOrdering!DecideFrameTn, Inv7
          <3> QED BY <3>1, <3>2, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8
      <2>2 ASSUME UNCHANGED vars
            PROVE Inv7'
-           BY <2>2, <1>2 DEF vars, BAPOrdering!vars, Inv7
+           BY <2>2, <1>2 DEF vars, VVOrdering!vars, Inv7
       <2> QED BY  <2>1, <2>2, <1>2 DEF Next
  <1> QED BY <1>1, <1>2, PTL DEF Spec
       
 
 ASSUME XAs == \A v \in VertexSet: v.frame = v.round /\ v.stronglysees = v.strongedges
 
-LEMMA equalDef ==  ProcessorSet = BAPOrdering!ProcessSet /\ RoundSet = BAPOrdering!Frames
-  BY DEF ProcessorSet, NumProcessors, BAPOrdering!ProcessSet, RoundSet,  BAPOrdering!Frames
+LEMMA equalDef ==  ProcessorSet = VVOrdering!ProcessSet /\ RoundSet = VVOrdering!Frames
+  BY DEF ProcessorSet, NumProcessors, VVOrdering!ProcessSet, RoundSet,  VVOrdering!Frames
   
 equalVar == \A p \in ProcessorSet, r \in RoundSet, q \in ProcessorSet: p \notin faulty => IF dag[p][r][q] = NilVertex(q, r) THEN VVdag[p][r][q] = {} ELSE VVdag[p][r][q] = {dag[p][r][q]}
 
@@ -680,7 +680,7 @@ LEMMA equalVarProof == Spec => []equalVar
                     BY <2>1 DEF RoundSet
                 <4> QED BY <4>1, <2>1, <1>1 DEF Init, InitDag
            <3>2 VVdag[p][r][q] = {}
-                BY <1>1, <2>1, equalDef DEF Init, BAPOrdering!Init, BAPOrdering!InitWitnessDAG
+                BY <1>1, <2>1, equalDef DEF Init, VVOrdering!Init, VVOrdering!InitWitnessDAG
            <3> QED BY <3>1, <3>2
       <2> QED BY <2>1 DEF equalVar
  <1>2 ASSUME [Next]_vars, equalVar PROVE equalVar'
@@ -695,19 +695,19 @@ LEMMA equalVarProof == Spec => []equalVar
          \/ VoteTn(p, u, v)
          \/ DecideFrameTn(p, r)) => equalVar'
          <3>1 ProposeTn(p, b) => equalVar'
-              BY <1>2, <2>1 DEF ProposeTn, vars, BAPOrdering!vars, equalVar
+              BY <1>2, <2>1 DEF ProposeTn, vars, VVOrdering!vars, equalVar
          <3>2 NextRoundTn(p) => equalVar'
-              BY <1>2, <2>1 DEF NextRoundTn, vars, BAPOrdering!vars, equalVar
+              BY <1>2, <2>1 DEF NextRoundTn, vars, VVOrdering!vars, equalVar
          <3>3 ReceiveVertexTn(p, q, r, v) => equalVar'
-              BY <1>2, <2>1 DEF ReceiveVertexTn, vars, BAPOrdering!vars, equalVar
+              BY <1>2, <2>1 DEF ReceiveVertexTn, vars, VVOrdering!vars, equalVar
          <3>4 ASSUME AddVertexTn(p, v) PROVE equalVar'
               <4>1 ASSUME  NEW p_1 \in ProcessorSet, NEW r_1 \in RoundSet, NEW q_1 \in ProcessorSet, p_1 \notin faulty
                    PROVE IF dag'[p_1][r_1][q_1] = NilVertex(q_1, r_1) THEN VVdag'[p_1][r_1][q_1] = {} ELSE VVdag'[p_1][r_1][q_1] = {dag'[p_1][r_1][q_1]}
                    <5>1  dag'= [dag EXCEPT ![p][v.round][v.source] = v] /\ VVdag' = [VVdag EXCEPT![p][v.round][v.source] = VVdag[p][v.round][v.source] \cup {v}]
-                        BY <3>4, XAs DEF AddVertexTn, BAPOrdering!AddWitnessTn
+                        BY <3>4, XAs DEF AddVertexTn, VVOrdering!AddWitnessTn
                    <5>2 CASE p_1 = p /\ r_1 = v.round /\ q_1 = v.source
                         <6>1 dag'[p_1][r_1][q_1] = v  /\ VVdag'[p_1][r_1][q_1] = VVdag[p_1][r_1][q_1] \cup {v}
-                             BY <3>4, XAs, <4>1, <5>2 DEF AddVertexTn, BAPOrdering!AddWitnessTn
+                             BY <3>4, XAs, <4>1, <5>2 DEF AddVertexTn, VVOrdering!AddWitnessTn
                         <6>2 dag[p_1][r_1][q_1] = NilVertex(q_1, r_1)
                              BY <4>1, <5>2, <3>4 DEF AddVertexTn
                         <6>3 VVdag'[p_1][r_1][q_1] = {v}
@@ -720,23 +720,23 @@ LEMMA equalVarProof == Spec => []equalVar
                    <5> QED BY <5>2, <5>3
               <4> QED BY <4>1 DEF equalVar
          <3>5 FaultyBcastTn(p ,v, r) => equalVar'
-              BY <1>2, <2>1 DEF FaultyBcastTn, vars, BAPOrdering!vars, equalVar
+              BY <1>2, <2>1 DEF FaultyBcastTn, vars, VVOrdering!vars, equalVar
          <3>6 DecideFameTn(p, u, v) => equalVar'
-              BY <1>2, <2>1 DEF DecideFameTn, vars1, BAPOrdering!DecideFameTn, equalVar
+              BY <1>2, <2>1 DEF DecideFameTn, vars1, VVOrdering!DecideFameTn, equalVar
          <3>7 VoteTn(p, u, v) => equalVar'
-              BY <1>2, <2>1 DEF VoteTn, vars1, BAPOrdering!VoteTn, equalVar
+              BY <1>2, <2>1 DEF VoteTn, vars1, VVOrdering!VoteTn, equalVar
          <3>8 DecideFrameTn(p, r) => equalVar'
-              BY <1>2, <2>1 DEF DecideFrameTn, vars1, BAPOrdering!DecideFrameTn, equalVar
+              BY <1>2, <2>1 DEF DecideFrameTn, vars1, VVOrdering!DecideFrameTn, equalVar
          <3> QED BY <3>1, <3>2, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8
      <2>2 ASSUME UNCHANGED vars
            PROVE equalVar'
-           BY <2>2, <1>2 DEF vars, BAPOrdering!vars, equalVar
+           BY <2>2, <1>2 DEF vars, VVOrdering!vars, equalVar
       <2> QED BY  <2>1, <2>2, <1>2 DEF Next
  <1> QED BY <1>1, <1>2, PTL DEF Spec
  
 
-LEMMA Safety2 == Spec => []UniqueStronglyseen
-   <1>1 ASSUME Inv7, DagConsistency, equalVar PROVE UniqueStronglyseen
+LEMMA Safety2 == Spec => []ReferenceConsistency
+   <1>1 ASSUME Inv7, DagConsistency, equalVar PROVE ReferenceConsistency
         <2>1 ASSUME NEW p \in ProcessorSet, NEW q \in ProcessorSet, NEW e \in VertexSet, NEW a \in VertexSet, NEW s \in VertexSet, NEW l \in VertexSet,
              p \notin faulty /\ q \notin faulty, a.round = e.round, a.source = e.source , 
               s \in VVdag[q][s.round][s.source] /\ a \in s.strongedges,
@@ -765,7 +765,7 @@ LEMMA Safety2 == Spec => []UniqueStronglyseen
              <3>4 p \in ProcessorSet /\ q \in ProcessorSet /\ a.round # 0
                  BY <3>3, <2>1
              <3> QED BY <3>1, <2>1, <1>1, <3>2, <3>3 DEF DagConsistency
-        <2> QED BY <2>1, <1>1 DEF UniqueStronglyseen, equalVar
+        <2> QED BY <2>1, <1>1 DEF ReferenceConsistency, equalVar
    <1> QED BY <1>1, DagConsistencyThm, Inv7proof, PTL, equalVarProof 
 
 
@@ -775,29 +775,29 @@ LEMMA Safety2 == Spec => []UniqueStronglyseen
 
   
 
-LEMMA SpecPreservingLemma == Spec => BAPOrdering!Spec
- <1>1 Init => BAPOrdering!Init
+LEMMA SpecPreservingLemma == Spec => VVOrdering!Spec
+ <1>1 Init => VVOrdering!Init
     BY DEF Init
- <1>2 ASSUME [Next]_vars, UniqueStronglyseen, UniqueStronglyseen', equalVar, equalVar' \*witnessDAG = BAPWitnessDAG \*, witnessDAG' = BAPWitnessDAG'
-      PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-      <2>1 BAPOrdering!UniqueStronglyseenAs /\ BAPOrdering!UniqueStronglyseenAs'
-            <3>1  ProcessorSet = BAPOrdering!ProcessSet
-               BY DEF ProcessorSet, NumProcessors, BAPOrdering!ProcessSet
-            <3>2 UniqueStronglyseen = \A p \in ProcessorSet, q \in ProcessorSet, e \in VertexSet, a \in VertexSet: 
+ <1>2 ASSUME [Next]_vars, ReferenceConsistency, ReferenceConsistency', equalVar, equalVar' \*witnessDAG = VVWitnessDAG \*, witnessDAG' = VVWitnessDAG'
+      PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+      <2>1 VVOrdering!UniqueStronglyseenAs /\ VVOrdering!UniqueStronglyseenAs'
+            <3>1  ProcessorSet = VVOrdering!ProcessSet
+               BY DEF ProcessorSet, NumProcessors, VVOrdering!ProcessSet
+            <3>2 ReferenceConsistency = \A p \in ProcessorSet, q \in ProcessorSet, e \in VertexSet, a \in VertexSet: 
         (/\ p \notin faulty /\ q \notin faulty
          /\ a.frame = e.frame 
          /\ a.source = e.source 
          /\ \E s \in VertexSet: s \in VVdag[q][s.frame][s.source] /\ a \in s.stronglysees
          /\ \E l \in VertexSet: l \in VVdag[p][l.frame][l.source] /\ e \in l.stronglysees) => a = e
-            BY XAs DEF UniqueStronglyseen
-            <3>3 UniqueStronglyseen' = \A p \in ProcessorSet, q \in ProcessorSet, e \in VertexSet, a \in VertexSet: 
+            BY XAs DEF ReferenceConsistency
+            <3>3 ReferenceConsistency' = \A p \in ProcessorSet, q \in ProcessorSet, e \in VertexSet, a \in VertexSet: 
         (/\ p \notin faulty /\ q \notin faulty
          /\ a.frame = e.frame 
          /\ a.source = e.source 
          /\ \E s \in VertexSet: s \in VVdag'[q][s.frame][s.source] /\ a \in s.stronglysees
          /\ \E l \in VertexSet: l \in VVdag'[p][l.frame][l.source] /\ e \in l.stronglysees) => a = e
-               BY XAs DEF UniqueStronglyseen
-            <3> QED BY <3>1, <3>2, <1>2, <3>3 DEF BAPOrdering!UniqueStronglyseenAs
+               BY XAs DEF ReferenceConsistency
+            <3> QED BY <3>1, <3>2, <1>2, <3>3 DEF VVOrdering!UniqueStronglyseenAs
       <2>2 ASSUME NEW p \in ProcessorSet, NEW r \in RoundSet,NEW v \in VertexSet, NEW b \in BlockSet, NEW  u \in VertexSet, NEW q \in ProcessorSet\{p}
           PROVE 
         (\/ ProposeTn(p, b)
@@ -807,37 +807,37 @@ LEMMA SpecPreservingLemma == Spec => BAPOrdering!Spec
          \/ FaultyBcastTn(p ,v, r)
          \/ DecideFameTn(p, u, v)
          \/ VoteTn(p, u, v)
-         \/ DecideFrameTn(p, r)) => BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-         <3>1 ASSUME ProposeTn(p, b) PROVE  BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-              BY <3>1 DEF ProposeTn, BAPOrdering!vars
-         <3>2 ASSUME NextRoundTn(p) PROVE  BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-              BY <3>2 DEF NextRoundTn, BAPOrdering!vars
-         <3>3 ASSUME ReceiveVertexTn(p, q, r, v) PROVE  BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-              BY <3>3 DEF ReceiveVertexTn, BAPOrdering!vars
-         <3>4 ASSUME AddVertexTn(p, v) PROVE  BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-              BY <3>4, <2>2, equalDef, <2>1 DEF BAPOrdering!Next, AddVertexTn
-         <3>5 ASSUME FaultyBcastTn(p ,v, r) PROVE  BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-              BY <3>5 DEF FaultyBcastTn, BAPOrdering!vars
-         <3>6 ASSUME DecideFameTn(p, u, v) PROVE  BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-              BY <3>6, <2>2, equalDef, <2>1 DEF BAPOrdering!Next, DecideFameTn
-         <3>7 ASSUME VoteTn(p, u, v) PROVE  BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-              BY <3>7, <2>2, equalDef, <2>1 DEF BAPOrdering!Next, VoteTn
-         <3>8 ASSUME DecideFrameTn(p, r) PROVE  BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-              BY <3>8, <2>2, equalDef, <2>1 DEF BAPOrdering!Next, DecideFrameTn
+         \/ DecideFrameTn(p, r)) => VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+         <3>1 ASSUME ProposeTn(p, b) PROVE  VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+              BY <3>1 DEF ProposeTn, VVOrdering!vars
+         <3>2 ASSUME NextRoundTn(p) PROVE  VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+              BY <3>2 DEF NextRoundTn, VVOrdering!vars
+         <3>3 ASSUME ReceiveVertexTn(p, q, r, v) PROVE  VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+              BY <3>3 DEF ReceiveVertexTn, VVOrdering!vars
+         <3>4 ASSUME AddVertexTn(p, v) PROVE  VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+              BY <3>4, <2>2, equalDef, <2>1 DEF VVOrdering!Next, AddVertexTn
+         <3>5 ASSUME FaultyBcastTn(p ,v, r) PROVE  VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+              BY <3>5 DEF FaultyBcastTn, VVOrdering!vars
+         <3>6 ASSUME DecideFameTn(p, u, v) PROVE  VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+              BY <3>6, <2>2, equalDef, <2>1 DEF VVOrdering!Next, DecideFameTn
+         <3>7 ASSUME VoteTn(p, u, v) PROVE  VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+              BY <3>7, <2>2, equalDef, <2>1 DEF VVOrdering!Next, VoteTn
+         <3>8 ASSUME DecideFrameTn(p, r) PROVE  VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+              BY <3>8, <2>2, equalDef, <2>1 DEF VVOrdering!Next, DecideFrameTn
          <3> QED BY <3>1, <3>2, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8
       <2>8 ASSUME UNCHANGED vars
-           PROVE BAPOrdering!Next \/ UNCHANGED BAPOrdering!vars
-           BY <2>8 DEF vars, BAPOrdering!vars
+           PROVE VVOrdering!Next \/ UNCHANGED VVOrdering!vars
+           BY <2>8 DEF vars, VVOrdering!vars
       <2> QED BY  <2>2, <2>8, <1>2 DEF Next
- <1> QED BY <1>1, <1>2, PTL, equalVarProof, Safety2 DEF Spec, BAPOrdering!Spec
+ <1> QED BY <1>1, <1>2, PTL, equalVarProof, Safety2 DEF Spec, VVOrdering!Spec
 -----------------------------------------------------------------------------
 
 LEMMA AlephSafety == Spec => []Safety
-   <1>1 Safety = BAPOrdering!Safety
-         BY equalDef DEF Safety, BAPOrdering!Safety
-   <1>2 Spec => []BAPOrdering!Safety
-         BY BAPOrdering!safetyproof, rAsm, fAsm, cAsm, SpecPreservingLemma
-   <1> QED BY <1>1, <1>2, BAPOrdering!safetyproof, rAsm, fAsm, cAsm, SpecPreservingLemma, equalDef, PTL DEF Safety, BAPOrdering!Safety
+   <1>1 Safety = VVOrdering!Safety
+         BY equalDef DEF Safety, VVOrdering!Safety
+   <1>2 Spec => []VVOrdering!Safety
+         BY VVOrdering!safetyproof, rAsm, fAsm, cAsm, SpecPreservingLemma
+   <1> QED BY <1>1, <1>2, VVOrdering!safetyproof, rAsm, fAsm, cAsm, SpecPreservingLemma, equalDef, PTL DEF Safety, VVOrdering!Safety
    
 =============================================================================
 \* Modification History
