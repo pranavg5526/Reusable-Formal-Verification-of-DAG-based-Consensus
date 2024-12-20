@@ -1,11 +1,11 @@
---------------- MODULE HashgraphCommunicationVerification ---------------
+--------------- MODULE UnreliableUnstructuredDAGconstructionProofs ---------------
 
 EXTENDS FiniteSets,
         Integers,
         Sequences,
         TLAPS,
         TLC,
-        hashgraphCommunication
+        UnreliableUnstructuredDAGconstructionSpecification
 
 --------------------------------------------------------------------------- 
 
