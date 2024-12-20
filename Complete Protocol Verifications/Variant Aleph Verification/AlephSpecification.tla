@@ -219,7 +219,7 @@ vars1 == <<blocksToPropose, broadcastNetwork, broadcastRecord, buffer, dag,
 VARIABLE VVdag, Fame, DecidedFrames, FamousWitnesses, Votes 
 
 
-BAPOrdering == INSTANCE OPODISHashgraph
+VVOrdering == INSTANCE OPODISHashgraph
    WITH r <- NumRound, 
         f <- f,
         c <- c,
@@ -272,7 +272,7 @@ ProposeTn(p, b) ==
    /\ blocksToPropose' = [blocksToPropose EXCEPT 
          ![p] = Append(blocksToPropose[p], b)]
    /\ UNCHANGED <<broadcastNetwork, broadcastRecord, buffer, dag, round, faulty>>
-   /\ UNCHANGED BAPOrdering!vars
+   /\ UNCHANGED VVOrdering!vars
 
 -----------------------------------------------------------------------------
 
@@ -308,7 +308,7 @@ NextRoundTn(p) ==
    /\ blocksToPropose' = [blocksToPropose EXCEPT 
          ![p] = Tail(blocksToPropose[p])]
    /\ UNCHANGED <<buffer, dag, faulty>>
-   /\ UNCHANGED BAPOrdering!vars
+   /\ UNCHANGED VVOrdering!vars
 
 
 -----------------------------------------------------------------------------
@@ -326,7 +326,7 @@ ReceiveVertexTn(p, q, r, v) ==
          ![p] = broadcastNetwork[p] \ 
              {[sender |-> q, inRound |-> r, vertex |-> v]}]
    /\ UNCHANGED <<blocksToPropose, broadcastRecord, dag, round, faulty>>
-   /\ UNCHANGED BAPOrdering!vars
+   /\ UNCHANGED VVOrdering!vars
 
 -----------------------------------------------------------------------------
 
@@ -343,7 +343,7 @@ AddVertexTn(p, v) ==
    /\ p \notin faulty => \A s \in v.strongedges: s = dag'[p][s.round][s.source]
    /\ dag'= [dag EXCEPT ![p][v.round][v.source] = v]
    /\ dag'[p][v.round][v.source] = v
-   /\ BAPOrdering!AddWitnessTn(p, v)
+   /\ VVOrdering!AddWitnessTn(p, v)
    /\ UNCHANGED <<blocksToPropose, broadcastNetwork, 
                   broadcastRecord, buffer, round, faulty>>
 
@@ -353,24 +353,24 @@ FaultyBcastTn(p ,v, r) ==
    /\ p \in faulty
    /\ Broadcast(p, r, v)
    /\ UNCHANGED <<blocksToPropose, buffer, dag, round, faulty>>
-   /\ UNCHANGED BAPOrdering!vars
+   /\ UNCHANGED VVOrdering!vars
 
 -----------------------------------------------------------------------------
 
 DecideFameTn(p, u, v) ==
   /\ UNCHANGED vars1
-  /\ BAPOrdering!DecideFameTn(p, u, v)
+  /\ VVOrdering!DecideFameTn(p, u, v)
 
 -----------------------------------------------------------------------------
 
 VoteTn(p, u, v) ==
   /\ UNCHANGED vars1
-  /\ BAPOrdering!VoteTn(p, u, v)  
+  /\ VVOrdering!VoteTn(p, u, v)  
 -----------------------------------------------------------------------------
 
 DecideFrameTn(p, r) ==
   /\ UNCHANGED vars1
-  /\ BAPOrdering!DecideFrameTn(p, r) 
+  /\ VVOrdering!DecideFrameTn(p, r) 
   
 (*--------------------------TRANSITION-SYSTEM------------------------------*)
 
@@ -394,7 +394,7 @@ Init ==
    /\ InitBuffer
    /\ InitDag
    /\ InitRound
-   /\ BAPOrdering!Init
+   /\ VVOrdering!Init
 
 Next == 
    \E p \in ProcessorSet, r \in RoundSet, v \in VertexSet, b \in BlockSet,  u \in VertexSet: 
@@ -431,7 +431,7 @@ DagConsistency ==
       /\ dag[p][r][o] \in VertexSet 
       /\ dag[q][r][o] \in VertexSet ) => dag[p][r][o] = dag[q][r][o]
 
-UniqueStronglyseen == \A p \in ProcessorSet, q \in ProcessorSet, e \in VertexSet, a \in VertexSet: 
+ReferenceConsistency == \A p \in ProcessorSet, q \in ProcessorSet, e \in VertexSet, a \in VertexSet: 
         (/\ p \notin faulty /\ q \notin faulty
          /\ a.round = e.round 
          /\ a.source = e.source 
@@ -445,8 +445,7 @@ Safety ==
        /\ DecidedFrames[p][x] 
        /\ DecidedFrames[q][x])
             => FamousWitnesses[p][x] = FamousWitnesses[q][x]
------------------------------------------------------------------------------              
-
+-----------------------------------------------------------------------------  
 =============================================================================
 \* Modification History
 \* Last modified Thu Dec 19 18:11:08 AEDT 2024 by pgho0778
