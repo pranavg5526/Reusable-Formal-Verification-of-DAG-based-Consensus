@@ -1,4 +1,4 @@
------------------------ MODULE hashgraphCommunication -----------------------
+----------------------- MODULE UnreliableUnstructuredDAGconstructionSpecification -----------------------
 
 
 EXTENDS FiniteSets,
