@@ -1,5 +1,5 @@
---------------- MODULE ReliableBcastCommunicationProofs ---------------
-EXTENDS ReliableBcastCommunicationSpecification,
+--------------- MODULE ReliableStructuredDAGconstructionProofs ---------------
+EXTENDS ReliableStructuredDAGconstructionSpecification,
         FiniteSets,
         Integers,
         Sequences,
