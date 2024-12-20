@@ -7,6 +7,9 @@ EXTENDS VVOrderingSpecification,
         TLAPS,
         TLC
 
+LEMMA \A x \in Nat: x = 0 => x < 3
+  OBVIOUS
+  
 LEMMA Pslt1 == \A e \in WitnessSet: /\ e.frame \in Nat 
                                     /\ e.frame \in Frames 
                                     /\ e.source \in ProcessSet 
@@ -56,35 +59,123 @@ THEOREM TypeOKcorrectness == Spec => []TypeOK
        PROVE TypeOK' 
        <2>1 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, AddWitnessTn(p, e)
             PROVE TypeOK'
-            BY <2>1, <1>2, Pslt1 DEF AddWitnessTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>1. CASE Next
+           BY <3>1, <2>1, <1>2, Pslt1 DEF AddWitnessTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>2. CASE UNCHANGED vars
+           BY <3>2, <2>1, <1>2, Pslt1 DEF AddWitnessTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>3. QED
+           BY <1>2, <3>1, <3>2  
        <2>2 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, NEW s \in WitnessSet, DecideFameTn(p, s, e)
             PROVE TypeOK'
-            BY <2>2, <1>2 DEF DecideFameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>1. WitnessDAGType'
+           BY <2>2, <1>2 DEF DecideFameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>2. VotesType'
+           BY <2>2, <1>2 DEF DecideFameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>3. FameType'
+           BY <2>2, <1>2 DEF DecideFameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>4. DecidedFramesType'
+           BY <2>2, <1>2 DEF DecideFameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>5. FamousWitnessesType'
+           BY <2>2, <1>2 DEF DecideFameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>6. QED
+           BY <3>1, <3>2, <3>3, <3>4, <3>5 DEF TypeOK
+            
        <2>3 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, NEW s \in WitnessSet, VoteTn(p, s, e)
             PROVE TypeOK'
             <3>1 VoteIn(p, s, e) \in BOOLEAN
                  <4>1 CASE s.frame = e.frame+1
-                      BY <4>1 DEF VoteIn
+                   <5>1. CASE Next
+                     BY <5>1, <4>1 DEF VoteIn
+                   <5>2. CASE UNCHANGED vars
+                     BY <5>2, <4>1 DEF VoteIn
+                   <5>3. QED
+                     BY <1>2, <5>1, <5>2
+                      
                  <4>2 CASE ~(s.frame = e.frame+1) /\ (s.frame - e.frame)%c # 0
-                      BY <4>2 DEF VoteIn
+                   <5>1. CASE Next
+                     BY <5>1, <4>2 DEF VoteIn
+                   <5>2. CASE UNCHANGED vars
+                     BY <5>2, <4>2 DEF VoteIn
+                   <5>3. QED
+                     BY <1>2, <5>1, <5>2
+                      
                  <4>3 CASE ~(s.frame = e.frame+1) /\ ~((s.frame - e.frame)%c # 0)
                       <5>1 CASE (Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ Votes[p][a][e]}) > 2*f)
-                           BY <5>1, <4>3 DEF VoteIn
+                        <6>1. CASE Next
+                          <7>1. CASE Next
+                            BY <7>1, <6>1, <5>1, <4>3 DEF VoteIn
+                          <7>2. CASE UNCHANGED vars
+                            BY <7>2, <6>1, <5>1, <4>3 DEF VoteIn
+                          <7>3. QED
+                            BY <1>2, <7>1, <7>2
+                          
+                        <6>2. CASE UNCHANGED vars
+                          <7>1. CASE Next
+                            BY <7>1, <6>2, <5>1, <4>3 DEF VoteIn
+                          <7>2. CASE UNCHANGED vars
+                            BY <7>2, <6>2, <5>1, <4>3 DEF VoteIn
+                          <7>3. QED
+                            BY <1>2, <7>1, <7>2
+                          
+                        <6>3. QED
+                          BY <1>2, <6>1, <6>2
+                           
                       <5>2 CASE ~(Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ Votes[p][a][e]}) > 2*f) /\ (Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ Votes[p][a][e]= FALSE}) > 2*f)
-                           BY <5>2, <4>3 DEF VoteIn
+                        <6>1. CASE Next
+                          BY <6>1, <5>2, <4>3 DEF VoteIn
+                        <6>2. CASE UNCHANGED vars
+                          BY <6>2, <5>2, <4>3 DEF VoteIn
+                        <6>3. QED
+                          BY <1>2, <6>1, <6>2
+                           
                       <5>3 CASE ~(Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ Votes[p][a][e]}) > 2*f) /\ ~(Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ Votes[p][a][e]= FALSE}) > 2*f)
-                           BY <5>3, <4>3, Pslt6, <2>3 DEF VoteIn
+                        <6>1. CASE Next
+                          BY <6>1, <5>3, <4>3, Pslt6, <2>3 DEF VoteIn
+                        <6>2. CASE UNCHANGED vars
+                          BY <6>2, <5>3, <4>3, Pslt6, <2>3 DEF VoteIn
+                        <6>3. QED
+                          BY <1>2, <6>1, <6>2
+                           
                       <5> QED BY <5>1, <5>2, <5>3 
-                 <4> QED BY <4>1, <4>2, <4>3
+                 <4> QED 
+                   <5>1. CASE Next
+                     BY <5>1, <4>1, <4>2, <4>3
+                   <5>2. CASE UNCHANGED vars
+                     BY <5>2, <4>1, <4>2, <4>3
+                   <5>3. QED
+                     BY <1>2, <5>1, <5>2
             <3> QED BY <3>1, <2>3, <1>2 DEF VoteTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
        <2>4 ASSUME NEW p \in ProcessSet, NEW x \in Frames, DecideFrameTn(p, x)
             PROVE TypeOK'
-            BY <2>4, <1>2 DEF DecideFrameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+         <3>1. CASE Next
+           <4>1. CASE Next
+             BY <4>1, <3>1, <2>4, <1>2 DEF DecideFrameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+           <4>2. CASE UNCHANGED vars
+             BY <4>2, <3>1, <2>4, <1>2 DEF DecideFrameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+           <4>3. QED
+             BY <1>2, <4>1, <4>2
+           
+         <3>2. CASE UNCHANGED vars
+           <4>1. CASE Next
+             BY <4>1, <3>2, <2>4, <1>2 DEF DecideFrameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+           <4>2. CASE UNCHANGED vars
+             BY <4>2, <3>2, <2>4, <1>2 DEF DecideFrameTn, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
+           <4>3. QED
+             BY <1>2, <4>1, <4>2
+           
+         <3>3. QED
+           BY <1>2, <3>1, <3>2
+            
        <2>5 ASSUME UNCHANGED vars
             PROVE TypeOK'
             BY <2>5, <1>2 DEF vars, TypeOK, WitnessDAGType, VotesType, FameType, DecidedFramesType, FamousWitnessesType
        <2> QED BY <2>1, <2>2, <2>3, <2>4, <2>5, <1>2 DEF Next
-  <1> QED BY <1>1, <1>2, PTL DEF Spec 
+  <1> QED  
+    <2> SUFFICES ASSUME Spec
+                 PROVE  []TypeOK
+      OBVIOUS
+    <2> QED
+      BY <1>1, <1>2, PTL DEF Spec
 
 Inv1 == \A p \in ProcessSet, s \in WitnessSet, e \in WitnessSet: Votes[p][s][e] # "undecided" /\ s.frame > e.frame+1 => \A a \in s.stronglysees: Votes[p][a][e] # "undecided"
 
@@ -95,7 +186,13 @@ LEMMA Inv1proof == Spec => []Inv1
        PROVE Inv1' 
        <2>1 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, AddWitnessTn(p, e)
             PROVE Inv1'
-            BY <2>1, <1>2 DEF AddWitnessTn, Inv1
+         <3>1. CASE Next
+           BY <3>1, <2>1, <1>2 DEF AddWitnessTn, Inv1
+         <3>2. CASE UNCHANGED vars
+           BY <3>2, <2>1, <1>2 DEF AddWitnessTn, Inv1
+         <3>3. QED
+           BY <1>2, <3>1, <3>2
+            
        <2>2 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, NEW s \in WitnessSet, DecideFameTn(p, s, e)
             PROVE Inv1'
             BY <2>2, <1>2 DEF DecideFameTn, Inv1
@@ -162,7 +259,7 @@ LEMMA Inv2proof == Spec => []Inv2
   <1> QED BY <1>1, <1>2, PTL, TypeOKcorrectness DEF Spec 
 
 Inv3 == \A p \in ProcessSet, s \in WitnessSet, e \in WitnessSet: 
-    Votes[p][s][e] = TRUE /\ (s.frame-e.frame)%c # 0 /\ s.frame > e.frame+1 => 
+    Votes[p][s][e] = TRUE /\ (s.frame-e.frame)%c # 0 /\ s.frame > e.frame+1 /\ p \notin faulty => 
            Cardinality({q \in ProcessSet: \E a \in s.stronglysees : a.source = q /\ Votes[p][a][e] = TRUE}) > f
 
 LEMMA Inv3proof == Spec => []Inv3
@@ -178,8 +275,8 @@ LEMMA Inv3proof == Spec => []Inv3
             BY <2>2, <1>2 DEF DecideFameTn, Inv3
        <2>3 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, NEW s \in WitnessSet, VoteTn(p, s, e), UniqueStronglyseenAs
             PROVE Inv3'
-            <3>1 ASSUME NEW j \in ProcessSet, NEW z \in WitnessSet, NEW b \in WitnessSet, Votes'[j][z][b] = TRUE, ((z.frame-b.frame)%c # 0), z.frame > b.frame+1
-                 PROVE Cardinality({q \in ProcessSet: \E a \in z.stronglysees : a.source = q /\ Votes'[j][a][b] = TRUE}) > f
+            <3>1 ASSUME NEW j \in ProcessSet, NEW z \in WitnessSet, NEW b \in WitnessSet, Votes'[j][z][b] = TRUE, ((z.frame-b.frame)%c # 0), z.frame > b.frame+1, j \notin faulty
+                 PROVE Cardinality({q \in ProcessSet: \E a \in z.stronglysees :  a.source = q /\ Votes'[j][a][b] = TRUE}) > f
                  <4>1 CASE j = p /\ b = e /\ s = z
                       <5>1 VoteIn(p, s, e) = TRUE /\ \A a \in s.stronglysees: Votes[p][a][e] = TRUE \/ Votes[p][a][e] = FALSE
                            BY <2>3, <1>2, <3>1, <4>1 DEF TypeOK, VotesType, VoteTn
@@ -194,10 +291,10 @@ LEMMA Inv3proof == Spec => []Inv3
                                  PROVE FALSE
                                  <7>1 \E i \in ProcessSet: i \in {q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ (Votes[p][a][e] = TRUE)} /\ i \in {q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ (Votes[p][a][e] = FALSE)}
                                       BY <6>1
-                                 <7>2 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees : a.source = u.source /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE /\ a.frame = u.frame /\ s \in WitnessDAG[p][s.frame][s.source]
+                                 <7>2 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees :  a.source = u.source /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE /\ a.frame = u.frame /\ s \in WitnessDAG[p][s.frame][s.source]
                                       BY <7>1, Pslt1, <2>3 DEF VoteTn
-                                 <7>4 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees : a = u /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE
-                                      BY <7>2, <2>3, Pslt1 DEF UniqueStronglyseenAs
+                                 <7>4 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees :  a = u /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE
+                                      BY <7>2, <2>3, Pslt1, <4>1, <3>1 DEF UniqueStronglyseenAs
                                  <7> QED BY <7>4
                            <6> QED BY <6>1
                       <5>6 Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q}) = Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ (Votes[p][a][e] = TRUE)}) + Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ (Votes[p][a][e] = FALSE)})
@@ -239,7 +336,7 @@ LEMMA Inv3proof == Spec => []Inv3
   <1> QED BY <1>1, <1>2, PTL, TypeOKcorrectness DEF Spec 
 
 Inv4 == \A p \in ProcessSet, s \in WitnessSet, e \in WitnessSet: 
-    Votes[p][s][e] = FALSE /\ (s.frame-e.frame)%c # 0 /\ s.frame > e.frame+1 => 
+    p \notin faulty /\ Votes[p][s][e] = FALSE /\ (s.frame-e.frame)%c # 0 /\ s.frame > e.frame+1 => 
            Cardinality({q \in ProcessSet: \E a \in s.stronglysees : a.source = q /\ Votes[p][a][e] = FALSE}) > f
 
 LEMMA Inv4proof == Spec => []Inv4
@@ -255,7 +352,7 @@ LEMMA Inv4proof == Spec => []Inv4
             BY <2>2, <1>2 DEF DecideFameTn, Inv4
        <2>3 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, NEW s \in WitnessSet, VoteTn(p, s, e), UniqueStronglyseenAs
             PROVE Inv4'
-            <3>1 ASSUME NEW j \in ProcessSet, NEW z \in WitnessSet, NEW b \in WitnessSet, Votes'[j][z][b] = FALSE, ((z.frame-b.frame)%c # 0), z.frame > b.frame+1
+            <3>1 ASSUME NEW j \in ProcessSet, NEW z \in WitnessSet, NEW b \in WitnessSet, Votes'[j][z][b] = FALSE, ((z.frame-b.frame)%c # 0), z.frame > b.frame+1, j \notin faulty
                  PROVE Cardinality({q \in ProcessSet: \E a \in z.stronglysees : a.source = q /\ Votes'[j][a][b] = FALSE}) > f
                  <4>1 CASE j = p /\ b = e /\ s = z
                       <5>1 VoteIn(p, s, e) = FALSE /\ \A a \in s.stronglysees: Votes[p][a][e] = TRUE \/ Votes[p][a][e] = FALSE
@@ -276,7 +373,7 @@ LEMMA Inv4proof == Spec => []Inv4
                                  <7>2 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees : a.source = u.source /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE /\ a.frame = u.frame /\ s \in WitnessDAG[p][s.frame][s.source]
                                       BY <7>1, Pslt1, <2>3 DEF VoteTn
                                  <7>4 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees : a = u /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE
-                                      BY <7>2, <2>3, Pslt1 DEF UniqueStronglyseenAs
+                                      BY <7>2, <2>3, Pslt1, <4>1, <3>1 DEF UniqueStronglyseenAs
                                  <7> QED BY <7>4
                            <6> QED BY <6>1
                       <5>6 Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q}) = Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ (Votes[p][a][e] = TRUE)}) + Cardinality({q \in ProcessSet: \E a \in s.stronglysees: a.source = q /\ (Votes[p][a][e] = FALSE)})
@@ -318,7 +415,8 @@ LEMMA Inv4proof == Spec => []Inv4
   <1> QED BY <1>1, <1>2, PTL, TypeOKcorrectness DEF Spec 
 
 Inv5 == \A p \in ProcessSet, s \in WitnessSet, e \in WitnessSet, x \in Frames: 
-                (/\ s \in WitnessDAG[p][s.frame][s.source]
+                (/\ p \notin faulty
+                 /\ s \in WitnessDAG[p][s.frame][s.source]
                  /\ Votes[p][s][e] # "undecided"
                  /\ e.frame < x /\ x < s.frame)
                   => (\E a \in WitnessSet: a \in WitnessDAG[p][a.frame][a.source] /\ a.frame = x /\ Votes[p][a][e] = Votes[p][s][e])
@@ -336,7 +434,7 @@ LEMMA Inv5proof == Spec => []Inv5
             BY <1>2, <2>2 DEF Inv5, DecideFameTn
        <2>3 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, NEW s \in WitnessSet, VoteTn(p, s, e), UniqueStronglyseenAs
             PROVE Inv5'
-            <3>1 ASSUME NEW q \in ProcessSet, NEW g \in WitnessSet, NEW h \in WitnessSet, NEW x \in Frames,  h \in WitnessDAG'[q][h.frame][h.source], Votes'[q][h][g] # "undecided", g.frame < x, x < h.frame
+            <3>1 ASSUME NEW q \in ProcessSet, NEW g \in WitnessSet, NEW h \in WitnessSet, NEW x \in Frames,  h \in WitnessDAG'[q][h.frame][h.source], Votes'[q][h][g] # "undecided", g.frame < x, x < h.frame, q \notin faulty
                  PROVE \E a \in WitnessSet: a \in WitnessDAG'[q][a.frame][a.source] /\ a.frame = x /\ Votes'[q][a][g] = Votes'[q][h][g]
                  <4>1 CASE p = q /\ g = e /\ h = s
                       <5>1 CASE h.frame-1 > g.frame
@@ -371,7 +469,7 @@ LEMMA Inv5proof == Spec => []Inv5
                                                <10>1 s.frame > e.frame+1 /\ Votes'[p][s][e] = TRUE /\ (s.frame - e.frame)%c # 0
                                                     BY <5>1, <4>1, <2>3, Pslt1, <8>1, <7>2,<9>2
                                                <10>2 Cardinality({j \in ProcessSet: \E a \in s.stronglysees : a.source = j /\ Votes'[p][a][e] = TRUE}) > f
-                                                    BY <10>1, <2>3, <1>2 DEF Inv3
+                                                    BY <10>1, <2>3, <1>2, <4>1, <3>1 DEF Inv3
                                                <10>3 {j \in ProcessSet: \E a \in s.stronglysees : a.source = j /\ Votes'[p][a][e] = TRUE} # {}
                                                      BY nonemptySet, <10>2
                                                <10>4 \E j \in ProcessSet: \E a \in s.stronglysees :  Votes'[p][a][e] = TRUE
@@ -395,7 +493,7 @@ LEMMA Inv5proof == Spec => []Inv5
                                                                   <13>2 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees : a.source = u.source /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE /\ a.frame = u.frame /\ s \in WitnessDAG[p][s.frame][s.source]
                                                                       BY <13>1, Pslt1, <2>3 DEF VoteTn
                                                                   <13>4 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees : a = u /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE
-                                                                      BY <13>2, <2>3, Pslt1 DEF UniqueStronglyseenAs
+                                                                      BY <13>2, <2>3, Pslt1, <4>1, <3>1 DEF UniqueStronglyseenAs
                                                                   <13> QED BY <13>4
                                                            <12> QED BY <12>1
                                                     <11>4 Cardinality({j \in ProcessSet: \E a \in s.stronglysees: a.source = j}) = Cardinality({j \in ProcessSet: \E a \in s.stronglysees: a.source = j /\ (Votes[p][a][e] = TRUE)}) + Cardinality({j \in ProcessSet: \E a \in s.stronglysees: a.source = j /\ (Votes[p][a][e] = FALSE)})
@@ -419,7 +517,7 @@ LEMMA Inv5proof == Spec => []Inv5
                                                <10>1 s.frame > e.frame+1 /\ Votes'[p][s][e] = FALSE /\ (s.frame - e.frame)%c # 0
                                                     BY <5>1, <4>1, <2>3, Pslt1, <8>2, <7>2,<9>2
                                                <10>2 Cardinality({j \in ProcessSet: \E a \in s.stronglysees : a.source = j /\ Votes'[p][a][e] = FALSE}) > f
-                                                    BY <10>1, <2>3, <1>2 DEF Inv4
+                                                    BY <10>1, <2>3, <1>2, <4>1, <3>1 DEF Inv4
                                                <10>3 {j \in ProcessSet: \E a \in s.stronglysees : a.source = j /\ Votes'[p][a][e] = FALSE} # {}
                                                      BY nonemptySet, <10>2
                                                <10>4 \E j \in ProcessSet: \E a \in s.stronglysees :  Votes'[p][a][e] = FALSE
@@ -443,7 +541,7 @@ LEMMA Inv5proof == Spec => []Inv5
                                                                   <13>2 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees : a.source = u.source /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE /\ a.frame = u.frame /\ s \in WitnessDAG[p][s.frame][s.source]
                                                                       BY <13>1, Pslt1, <2>3 DEF VoteTn
                                                                   <13>4 \E i \in ProcessSet, a \in s.stronglysees, u \in s.stronglysees : a = u /\ Votes[p][a][e] = TRUE  /\ Votes[p][u][e] = FALSE
-                                                                      BY <13>2, <2>3, Pslt1 DEF UniqueStronglyseenAs
+                                                                      BY <13>2, <2>3, Pslt1, <4>1, <3>1 DEF UniqueStronglyseenAs
                                                                   <13> QED BY <13>4
                                                            <12> QED BY <12>1
                                                     <11>4 Cardinality({j \in ProcessSet: \E a \in s.stronglysees: a.source = j}) = Cardinality({j \in ProcessSet: \E a \in s.stronglysees: a.source = j /\ (Votes[p][a][e] = TRUE)}) + Cardinality({j \in ProcessSet: \E a \in s.stronglysees: a.source = j /\ (Votes[p][a][e] = FALSE)})
@@ -806,7 +904,7 @@ THEOREM Inv10proof == Spec => []Inv10
                      PROVE z \in WitnessDAG[q][z.frame][z.source] => z \in WitnessDAG'[q][z.frame][z.source]
                      BY <4>1, <3>1, <2>1 DEF AddWitnessTn, TypeOK, WitnessDAGType, FameType, DecidedFramesType, FamousWitnessesType
                 <4> QED BY <4>1, <3>1, <2>1,<1>2 DEF Inv10
-            <3> QED BY <2>1, <1>2, <3>1 DEF AddWitnessTn, Inv10
+            <3> QED BY <3>1, <2>1 DEF AddWitnessTn, Inv10
        <2>2 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, NEW b \in WitnessSet, DecideFameTn(p, b, e)
             PROVE Inv10'
             <3>1 ASSUME NEW q \in ProcessSet, NEW a \in WitnessSet, Fame'[q][a] = TRUE
@@ -979,12 +1077,12 @@ THEOREM Inv11proof == Spec => []Inv11
   <1> QED BY <1>1, <1>2, PTL, TypeOKcorrectness DEF Spec
 
 Inv12 == \A p \in ProcessSet, e \in WitnessSet:
-        /\ Fame[p][e] = TRUE => \E a \in WitnessSet: a.frame = e.frame+2 /\ a \in WitnessDAG[p][a.frame][a.source] /\ Cardinality({j \in ProcessSet: \E s \in a.stronglysees: s.source = j /\ s.frame = e.frame+1 /\ e \in s.stronglysees /\ s \in WitnessDAG[p][s.frame][s.source]}) > f
+        p \notin faulty /\ Fame[p][e] = TRUE => \E a \in WitnessSet: a.frame = e.frame+2 /\ a \in WitnessDAG[p][a.frame][a.source] /\ Cardinality({j \in ProcessSet: \E s \in a.stronglysees: s.source = j /\ s.frame = e.frame+1 /\ e \in s.stronglysees /\ s \in WitnessDAG[p][s.frame][s.source]}) > f
 
 LEMMA Inv12proof == Spec => []Inv12
   <1>1 ASSUME Inv3, TypeOK, Inv5, Inv9, Inv6, Inv2
        PROVE Inv12
-       <2>1 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, Fame[p][e] = TRUE
+       <2>1 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, Fame[p][e] = TRUE, p \notin faulty
             PROVE \E a \in WitnessSet: /\ a.frame = e.frame+2 /\ a \in WitnessDAG[p][a.frame][a.source] 
                                        /\ Cardinality({j \in ProcessSet: \E s \in a.stronglysees: s.source = j /\ s.frame = e.frame+1 /\ e \in s.stronglysees /\ s \in WitnessDAG[p][s.frame][s.source]}) > f
             <3>1 \E b \in WitnessSet: b \in WitnessDAG[p][b.frame][b.source] /\ b.frame = e.frame+2 /\ Votes[p][b][e] = TRUE
@@ -1006,7 +1104,7 @@ LEMMA Inv12proof == Spec => []Inv12
                            <6>3 p \in ProcessSet /\ Votes[p][s][e] # "undecided" /\ e \in WitnessSet
                                 BY <2>1, <4>2, unequalTF
                            <6>4 \E b \in WitnessSet: b \in WitnessDAG[p][b.frame][b.source] /\ b.frame = e.frame+2 /\ Votes[p][b][e] = Votes[p][s][e]
-                                 BY <6>2, <6>1, <4>2, <6>3, <1>1 DEF Inv5
+                                 BY <6>2, <6>1, <4>2, <6>3, <1>1, <2>1 DEF Inv5
                            <6> QED BY <6>4, <4>2
                       <5> QED BY <5>1, <5>2
                  <4> QED BY <4>1, <4>2
@@ -1025,7 +1123,7 @@ LEMMA Inv12proof == Spec => []Inv12
                            <6>2 z.frame \in Nat /\ b.frame \in Nat /\ e.frame \in Nat
                                 BY <5>2, <5>1, Pslt1
                            <6> QED BY <6>1, <6>2, <3>2
-                      <5> QED BY <4>1, <5>1, <1>1, <5>2 DEF Inv3
+                      <5> QED BY <4>1, <5>1, <1>1, <5>2, <2>1 DEF Inv3
                  <4>3 \A z \in b.stronglysees: z \in WitnessDAG[p][z.frame][z.source]
                       BY <3>2, <1>1 DEF Inv9
                  <4>4 \A z \in b.stronglysees: z.frame = e.frame+1 /\ Votes[p][z][e] = TRUE => e \in z.stronglysees
@@ -1201,7 +1299,8 @@ LEMMA Inv14proof == Spec => []Inv14
   <1> QED BY <1>1, <1>2, PTL, TypeOKcorrectness, Inv9proof DEF Spec 
 
 Inv15 == \A p \in ProcessSet, q \in ProcessSet, e \in WitnessSet, s \in WitnessSet, g \in WitnessSet: 
-       (/\ e \in WitnessDAG[p][e.frame][e.source] 
+       (/\ p \notin faulty /\ q \notin faulty
+        /\ e \in WitnessDAG[p][e.frame][e.source] 
         /\ s \in WitnessDAG[p][s.frame][s.source]
         /\ s.frame > e.frame+1
         /\ (s.frame-e.frame)%c # 0
@@ -1218,7 +1317,7 @@ THEOREM Inv15proof == Spec => []Inv15
             PROVE Inv15'
             <3>1 ASSUME NEW i \in ProcessSet, NEW j \in ProcessSet, NEW a \in WitnessSet, NEW b \in WitnessSet, NEW g \in WitnessSet, b.frame > a.frame+1, (b.frame-a.frame)%c # 0,
                        a \in WitnessDAG'[i][a.frame][a.source], b \in WitnessDAG'[i][b.frame][b.source], g \in WitnessDAG'[j][g.frame][g.source], g.frame >= b.frame,
-                       Cardinality({d \in ProcessSet: \E z \in b.stronglysees: z.source = d /\ Votes'[i][z][a]= TRUE}) > 2*f
+                       Cardinality({d \in ProcessSet: \E z \in b.stronglysees: z.source = d /\ Votes'[i][z][a]= TRUE}) > 2*f, i \notin faulty /\ j \notin faulty
                  PROVE Votes'[i][b][a] = TRUE => Votes'[j][g][a] = "undecided" \/ Votes'[j][g][a] = TRUE
                  <4>1 CASE i = p
                       <5>1 CASE e = b
@@ -1281,7 +1380,7 @@ THEOREM Inv15proof == Spec => []Inv15
             BY <1>2, <2>2 DEF Inv15, DecideFameTn
        <2>3 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, NEW s \in WitnessSet, VoteTn(p, s, e), UniqueStronglyseenAs, UniqueStronglyseenAs'
             PROVE Inv15'
-            <3>1 ASSUME NEW i \in ProcessSet, NEW j \in ProcessSet, NEW a \in WitnessSet, NEW b \in WitnessSet, NEW g \in WitnessSet, b.frame > a.frame+1, (b.frame-a.frame)%c # 0,
+            <3>1 ASSUME NEW i \in ProcessSet, NEW j \in ProcessSet, NEW a \in WitnessSet, NEW b \in WitnessSet, NEW g \in WitnessSet, b.frame > a.frame+1, (b.frame-a.frame)%c # 0, i \notin faulty /\ j \notin faulty,
                        a \in WitnessDAG[i][a.frame][a.source], b \in WitnessDAG[i][b.frame][b.source], g \in WitnessDAG[j][g.frame][g.source], g.frame >= b.frame,
                        Cardinality({d \in ProcessSet: \E z \in b.stronglysees: z.source = d /\ Votes'[i][z][a] = TRUE}) > 2*f
                  PROVE Votes'[i][b][a] = TRUE => Votes'[j][g][a] = "undecided" \/ Votes'[j][g][a] = TRUE
@@ -1341,7 +1440,9 @@ THEOREM Inv15proof == Spec => []Inv15
                                                      BY <3>1, <9>1, Pslt1
                                                <10>5 b.frame \in Frames
                                                      BY <3>1, Pslt1
-                                               <10> QED BY <9>2, <10>1, <10>2, <10>3, <10>4, <10>5, <1>2 DEF Inv5
+                                               <10>6 j \notin faulty
+                                                     BY <3>1
+                                               <10> QED BY <9>2, <10>1, <10>2, <10>3, <10>4, <10>5, <1>2, <10>6 DEF Inv5
                                           <9>3 ASSUME NEW m \in WitnessSet, m \in WitnessDAG[j][m.frame][m.source], m.frame = b.frame, Votes[j][m][a] = FALSE
                                                PROVE FALSE
                                                <10>1  Cardinality({q \in ProcessSet: \E z \in m.stronglysees : z.source = q /\ Votes[j][z][a] = FALSE}) > f
@@ -1455,7 +1556,9 @@ THEOREM Inv15proof == Spec => []Inv15
                                                      BY <3>1, <9>1, Pslt1
                                                <10>5 b.frame \in Frames
                                                      BY <3>1, Pslt1
-                                               <10> QED BY <9>2, <10>1, <10>2, <10>3, <10>4, <10>5, <1>2 DEF Inv5
+                                               <10>6 j \notin faulty
+                                                     BY <3>1
+                                               <10> QED BY <9>2, <10>1, <10>2, <10>3, <10>4, <10>5, <1>2, <10>6 DEF Inv5
                                           <9>3 ASSUME NEW m \in WitnessSet, m \in WitnessDAG'[j][m.frame][m.source], m.frame = b.frame, Votes'[j][m][a] = FALSE
                                                PROVE FALSE
                                                <10>1  Cardinality({q \in ProcessSet: \E z \in m.stronglysees : z.source = q /\ Votes'[j][z][a] = FALSE}) > f
@@ -1540,14 +1643,14 @@ THEOREM Inv15proof == Spec => []Inv15
   <1> QED BY <1>1, <1>2, PTL, TypeOKcorrectness, Inv9proof, Inv4proof, Inv8proof, Inv5proof, Inv1proof DEF Spec
 
 Inv16 == \A p \in ProcessSet, q \in ProcessSet, e \in WitnessSet, s \in WitnessSet, g \in WitnessSet: 
-       (/\ e \in WitnessDAG[p][e.frame][e.source] 
+       (/\ p \notin faulty /\ q \notin faulty
+        /\ e \in WitnessDAG[p][e.frame][e.source] 
         /\ s \in WitnessDAG[p][s.frame][s.source]
         /\ s.frame > e.frame+1
         /\ (s.frame-e.frame)%c # 0
         /\ Cardinality({d \in ProcessSet: \E a \in s.stronglysees: a.source = d /\ Votes[p][a][e]=FALSE}) > 2*f
         /\ g \in WitnessDAG[q][g.frame][g.source]
         /\ g.frame >= s.frame) => (Votes[p][s][e] = FALSE => Votes[q][g][e] = "undecided" \/ Votes[q][g][e] = FALSE)
-
 
 THEOREM Inv16proof == Spec => []Inv16
   <1>1 Init => Inv16
@@ -1557,7 +1660,8 @@ THEOREM Inv16proof == Spec => []Inv16
        <2>1 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, AddWitnessTn(p, e)
             PROVE Inv16'
             <3>1 ASSUME NEW i \in ProcessSet, NEW j \in ProcessSet, NEW a \in WitnessSet, NEW b \in WitnessSet, NEW g \in WitnessSet, 
-       (/\ a \in WitnessDAG'[i][a.frame][a.source] 
+       (/\ i \notin faulty /\ j \notin faulty
+        /\ a \in WitnessDAG'[i][a.frame][a.source] 
         /\ b \in WitnessDAG'[i][b.frame][b.source]
         /\ b.frame > a.frame+1
         /\ (b.frame-a.frame)%c # 0
@@ -1599,7 +1703,7 @@ THEOREM Inv16proof == Spec => []Inv16
                                 <7>7 b.frame > a.frame+1 /\ (b.frame-a.frame)%c # 0 /\ g.frame >= b.frame
                                      BY <3>1
                                 <7>6 Votes[i][b][a] = FALSE => Votes[j][g][a] = "undecided" \/ Votes[j][g][a] = FALSE
-                                     BY <7>1, <7>2, <7>3, <7>5, <7>7, <1>2 DEF Inv16
+                                     BY <7>1, <7>2, <7>3, <7>5, <7>7, <1>2, <3>1 DEF Inv16
                                 <7> QED BY <7>6, <7>1, <7>2, <7>3, <7>5, <3>1, <2>1, <1>2 DEF Inv15, AddWitnessTn
                            <6> QED BY <6>1, <6>2
                       <5> QED BY <5>1, <5>2, <5>3
@@ -1623,7 +1727,9 @@ THEOREM Inv16proof == Spec => []Inv16
                                 BY <3>1, <6>4, subsetCard, natfAs, intCard, <2>1 DEF AddWitnessTn
                            <6>6 b.frame > a.frame+1 /\ (b.frame-a.frame)%c # 0 /\ g.frame >= b.frame
                                 BY <3>1
-                           <6> QED BY <6>1, <6>2, <6>3, <6>5, <2>1, <1>2, <6>6 DEF Inv16, AddWitnessTn     
+                           <6>7 i \notin faulty /\ j \notin faulty
+                               BY <3>1
+                           <6> QED BY <6>1, <6>2, <6>3, <6>5, <2>1, <1>2, <6>6, <6>7 DEF Inv16, AddWitnessTn     
                       <5> QED BY <5>1, <5>2
                  <4> QED BY <4>1, <4>2, <3>1, <2>1 DEF AddWitnessTn
             <3> QED BY <3>1 DEF Inv16
@@ -1632,7 +1738,7 @@ THEOREM Inv16proof == Spec => []Inv16
             BY <1>2, <2>2 DEF Inv16, DecideFameTn
        <2>3 ASSUME NEW p \in ProcessSet, NEW e \in WitnessSet, NEW s \in WitnessSet, VoteTn(p, s, e), UniqueStronglyseenAs, UniqueStronglyseenAs'
             PROVE Inv16' 
-            <3>1 ASSUME NEW i \in ProcessSet, NEW j \in ProcessSet, NEW a \in WitnessSet, NEW b \in WitnessSet, NEW g \in WitnessSet, b.frame > a.frame+1, (b.frame-a.frame)%c # 0,
+            <3>1 ASSUME NEW i \in ProcessSet, NEW j \in ProcessSet, NEW a \in WitnessSet, NEW b \in WitnessSet, NEW g \in WitnessSet, i \notin faulty /\ j \notin faulty, b.frame > a.frame+1, (b.frame-a.frame)%c # 0, 
                        a \in WitnessDAG[i][a.frame][a.source], b \in WitnessDAG[i][b.frame][b.source], g \in WitnessDAG[j][g.frame][g.source], g.frame >= b.frame,
                        Cardinality({d \in ProcessSet: \E z \in b.stronglysees: z.source = d /\ Votes'[i][z][a] = FALSE}) > 2*f 
                  PROVE Votes'[i][b][a] = FALSE => Votes'[j][g][a] = "undecided" \/ Votes'[j][g][a] = FALSE
@@ -1654,7 +1760,7 @@ THEOREM Inv16proof == Spec => []Inv16
                                               <10>3 g \in WitnessSet /\ a \in WitnessSet /\ j \in ProcessSet
                                                     BY <3>1
                                               <10>2 ASSUME  Votes[j][g][a] = TRUE PROVE Cardinality({q \in ProcessSet: \E z \in g.stronglysees : z.source = q /\ Votes[j][z][a] = TRUE}) > f 
-                                                    BY <10>1, <10>2, 10>3, <1>2 DEF Inv3
+                                                    BY <10>1, <10>2, 10>3, <1>2, <3>1 DEF Inv3
                                               <10> QED BY <10>2
                                           <9>2 Votes[j][g][a] = TRUE => {q \in ProcessSet: \E z \in g.stronglysees : z.source = q /\ Votes[j][z][a] = TRUE} \cap {d \in ProcessSet: \E z \in b.stronglysees: z.source = d /\ Votes'[i][z][a] = FALSE} # {}
                                                BY <9>1, <3>1, Pslt3
@@ -1696,7 +1802,9 @@ THEOREM Inv16proof == Spec => []Inv16
                                                      BY <3>1, <9>1, Pslt1
                                                <10>5 b.frame \in Frames
                                                      BY <3>1, Pslt1
-                                               <10> QED BY <9>2, <10>1, <10>2, <10>3, <10>4, <10>5, <1>2 DEF Inv5
+                                               <10>6 j \notin faulty
+                                                     BY <3>1
+                                               <10> QED BY <9>2, <10>1, <10>2, <10>3, <10>4, <10>5, <10>6, <1>2 DEF Inv5
                                           <9>3 ASSUME NEW m \in WitnessSet, m \in WitnessDAG[j][m.frame][m.source], m.frame = b.frame, Votes[j][m][a] = TRUE
                                                PROVE FALSE
                                                <10>1  Cardinality({q \in ProcessSet: \E z \in m.stronglysees : z.source = q /\ Votes[j][z][a] = TRUE}) > f
@@ -1810,7 +1918,9 @@ THEOREM Inv16proof == Spec => []Inv16
                                                      BY <3>1, <9>1, Pslt1
                                                <10>5 b.frame \in Frames
                                                      BY <3>1, Pslt1
-                                               <10> QED BY <9>2, <10>1, <10>2, <10>3, <10>4, <10>5, <1>2 DEF Inv5
+                                               <10>6 j \notin faulty
+                                                     BY <3>1
+                                               <10> QED BY <9>2, <10>1, <10>2, <10>3, <10>4, <10>5, <10>6, <1>2 DEF Inv5
                                           <9>3 ASSUME NEW m \in WitnessSet, m \in WitnessDAG'[j][m.frame][m.source], m.frame = b.frame, Votes'[j][m][a] = TRUE
                                                PROVE FALSE
                                                <10>1  Cardinality({q \in ProcessSet: \E z \in m.stronglysees : z.source = q /\ Votes'[j][z][a] = TRUE}) > f
@@ -1884,7 +1994,9 @@ THEOREM Inv16proof == Spec => []Inv16
                            BY <5>1, <3>1, subsetCard, intCard, natfAs, Pslt1
                       <5>3 Votes'[i][b][a] = Votes[i][b][a] /\ Votes'[j][g][a] = Votes[j][g][a]
                            BY <3>1, <5>1
-                      <5> QED BY <3>1, <1>2, <5>2, <5>3 DEF Inv16
+                      <5>5 Votes[i][b][a] = FALSE => Votes[j][g][a] = "undecided" \/ Votes[j][g][a] = FALSE
+                           BY <3>1, <1>2, <5>2 DEF Inv16
+                      <5> QED BY <5>5, <5>3
                  <4> QED BY <4>1, <4>2
             <3> QED BY <3>1, <2>3 DEF Inv16,  VoteTn
        <2>4 ASSUME NEW p \in ProcessSet, NEW x \in Frames, DecideFrameTn(p, x)
@@ -1897,7 +2009,8 @@ THEOREM Inv16proof == Spec => []Inv16
   <1> QED BY <1>1, <1>2, PTL, TypeOKcorrectness, Inv9proof, Inv3proof, Inv8proof, Inv5proof, Inv1proof DEF Spec
 
 FameSafetyInv17 == \A p \in ProcessSet, q \in ProcessSet, e \in WitnessSet:
-                      (/\ e \in WitnessDAG[p][e.frame][e.source] 
+                      (/\ p \notin faulty /\ q \notin faulty
+                       /\ e \in WitnessDAG[p][e.frame][e.source] 
                        /\ e \in WitnessDAG[q][e.frame][e.source]
                        /\ Fame[p][e] # "undecided" 
                        /\ Fame[q][e] # "undecided") => Fame[p][e] = Fame[q][e]
@@ -1905,7 +2018,7 @@ FameSafetyInv17 == \A p \in ProcessSet, q \in ProcessSet, e \in WitnessSet:
 THEOREM FameSafetyInv17proof == Spec => []FameSafetyInv17
   <1>1 ASSUME Inv15, Inv16, Inv10, Inv11, TypeOK
        PROVE FameSafetyInv17
-       <2>1 ASSUME NEW p \in ProcessSet, NEW q \in ProcessSet, NEW e \in WitnessSet, Fame[p][e] # "undecided", Fame[q][e] # "undecided", e \in WitnessDAG[p][e.frame][e.source], e \in WitnessDAG[q][e.frame][e.source]
+       <2>1 ASSUME NEW p \in ProcessSet, NEW q \in ProcessSet, NEW e \in WitnessSet, Fame[p][e] # "undecided", Fame[q][e] # "undecided", e \in WitnessDAG[p][e.frame][e.source], e \in WitnessDAG[q][e.frame][e.source], p \notin faulty /\ q \notin faulty
             PROVE Fame[p][e] = Fame[q][e]
             <3>1 CASE Fame[p][e] = Fame[q][e]
                  BY <3>1
@@ -1958,18 +2071,18 @@ THEOREM FameSafetyInv17proof == Spec => []FameSafetyInv17
   <1> QED BY <1>1, Inv15proof, Inv16proof, Inv10proof, Inv11proof, TypeOKcorrectness, PTL DEF FameSafetyInv17    
                                                                    
 Inv18 == \A x \in Frames, p \in ProcessSet, q \in ProcessSet, e \in WitnessSet:
-       (/\ e.frame =x
+       (/\ p \notin faulty /\ q \notin faulty
+        /\ e.frame =x
         /\ e \in WitnessDAG[p][x][e.source]
         /\ \E a \in WitnessSet: a \in WitnessDAG[p][x+2][a.source] /\ a.frame= x+2
         /\ Fame[p][e] = TRUE
         /\ \E a \in WitnessSet: a \in WitnessDAG[q][x+2][a.source] /\ a.frame= x+2)
            => e \in WitnessDAG[q][x][e.source]
            
-
 LEMMA Inv18proof == Spec => []Inv18
  <1>1 ASSUME Inv12, Inv9, UniqueStronglyseenAs
       PROVE Inv18
-      <2>1 ASSUME NEW x \in Frames, NEW p \in ProcessSet, NEW q \in ProcessSet, NEW e \in WitnessSet, e \in WitnessDAG[p][x][e.source], Fame[p][e] = TRUE, e.frame = x, \E a \in WitnessSet: a \in WitnessDAG[p][x+2][a.source] /\ a.frame= x+2, \E a \in WitnessSet: a \in WitnessDAG[q][x+2][a.source] /\ a.frame= x+2
+      <2>1 ASSUME NEW x \in Frames, NEW p \in ProcessSet, NEW q \in ProcessSet, NEW e \in WitnessSet, e \in WitnessDAG[p][x][e.source], Fame[p][e] = TRUE, e.frame = x, \E a \in WitnessSet: a \in WitnessDAG[p][x+2][a.source] /\ a.frame= x+2, \E a \in WitnessSet: a \in WitnessDAG[q][x+2][a.source] /\ a.frame= x+2 /\ p \notin faulty /\ q \notin faulty
            PROVE e \in WitnessDAG[q][x][e.source]
            <3>1 ASSUME NEW a \in WitnessSet, a \in WitnessDAG[q][x+2][a.source], a.frame = x+2
                 PROVE Cardinality({j \in ProcessSet: \E z \in a.stronglysees: z.source = j /\ z.frame = a.frame-1 /\ z \in WitnessDAG[q][z.frame][z.source]})> 2*f
@@ -1998,7 +2111,7 @@ LEMMA Inv18proof == Spec => []Inv18
                  <4>1 ASSUME NEW a \in WitnessSet, NEW z \in a.stronglysees
                       PROVE z \in WitnessSet
                       BY <4>1, Pslt1
-                 <4> QED BY <4>1, <1>1, <3>6 DEF UniqueStronglyseenAs
+                 <4> QED BY <4>1, <1>1, <3>6, <2>1 DEF UniqueStronglyseenAs
            <3>8 \E a \in WitnessSet, b \in WitnessSet: /\ a.frame = e.frame+2 /\ b.frame = e.frame+2 /\ a \in WitnessDAG[p][a.frame][a.source] /\ b \in WitnessDAG[q][b.frame][b.source]
                                                        /\ \E j \in ProcessSet: \E s \in a.stronglysees, z \in b.stronglysees:  z \in WitnessDAG[q][z.frame][z.source] /\ e \in z.stronglysees /\ e \in WitnessDAG[q][e.frame][e.source]
                  BY <1>1, <3>7, <2>1, Pslt1 DEF Inv9
@@ -2011,7 +2124,7 @@ LEMMA Inv18proof == Spec => []Inv18
 THEOREM safetyproof == Spec => []Safety
  <1>1 ASSUME FameSafetyInv17, Inv18, TypeOK, Inv13, Inv14, Inv12, UniqueStronglyseenAs
       PROVE Safety
-      <2>1 ASSUME NEW p \in ProcessSet, NEW q \in ProcessSet, NEW x \in Frames, DecidedFrames[p][x], DecidedFrames[q][x]
+      <2>1 ASSUME NEW p \in ProcessSet, NEW q \in ProcessSet, NEW x \in Frames, DecidedFrames[p][x], DecidedFrames[q][x], p \notin faulty, q \notin faulty
            PROVE FamousWitnesses[p][x] = FamousWitnesses[q][x]
            <3>1 CASE \E e \in WitnessSet: e \in FamousWitnesses[p][x] /\ e \notin FamousWitnesses[q][x]
                 <4>1 \E e \in WitnessSet: e \in FamousWitnesses[p][x] /\ e \notin FamousWitnesses[q][x]  
@@ -2109,9 +2222,11 @@ THEOREM safetyproof == Spec => []Safety
                            BY <5>10, <1>1, <2>1, Pslt1 DEF UniqueStronglyseenAs
                      <5> QED BY <5>11
                 <4> QED BY <4>1, <4>2
-           <3>3 CASE FamousWitnesses[p][x] = FamousWitnesses[q][x]
-                BY <3>3
-           <3> QED BY <3>1, <3>2, <3>3, <1>1, <2>1 DEF TypeOK, FamousWitnessesType
+           <3>3 CASE \A e \in WitnessSet: e \in FamousWitnesses[p][x] <=> e \in FamousWitnesses[q][x]
+                <4>1 FamousWitnesses[p][x] \in SUBSET(WitnessSet) /\ FamousWitnesses[q][x] \in SUBSET(WitnessSet)
+                   BY <1>1, <2>1 DEF TypeOK, FamousWitnessesType
+                <4> QED BY <3>3, <4>1
+           <3> QED BY <3>1, <3>2, <3>3
       <2> QED BY <2>1 DEF Safety
  <1> QED BY <1>1, PTL, Inv18proof, FameSafetyInv17proof, Inv13proof, TypeOKcorrectness, Inv14proof, UsAsproof, Inv12proof
 =============================================================================
