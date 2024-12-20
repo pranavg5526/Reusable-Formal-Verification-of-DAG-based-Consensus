@@ -149,7 +149,7 @@ vars ==
   << witnessDAG, hashgraph, tip, VVWitnessDAG, Fame, DecidedFrames, FamousWitnesses, Votes >>
   
 
-VVOrdering == INSTANCE OPODISHashgraph
+VVOrdering == INSTANCE VVOrderingProofs
    WITH r <- r, 
         f <- f,
         c <- c,
