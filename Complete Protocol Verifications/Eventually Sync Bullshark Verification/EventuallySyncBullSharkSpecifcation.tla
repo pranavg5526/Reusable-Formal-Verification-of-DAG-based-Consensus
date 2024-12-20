@@ -1,4 +1,4 @@
----------------------- MODULE FMBullsharkSpecifcation ----------------------
+---------------------- MODULE EventuallySyncBullSharkSpecifcation ----------------------
 
 EXTENDS FiniteSets,
         Integers,
