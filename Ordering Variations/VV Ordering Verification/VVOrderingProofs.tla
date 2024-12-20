@@ -1,6 +1,6 @@
--------------------------- MODULE BinaryAgreementProtocolHashgraphProofs --------------------------
+-------------------------- MODULE VVOrderingProofs --------------------------
 
-EXTENDS OPODISHashgraphSpecification,
+EXTENDS VVOrderingSpecification,
         FiniteSets,
         Integers,
         Sequences,
