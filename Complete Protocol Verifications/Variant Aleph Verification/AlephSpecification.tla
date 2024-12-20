@@ -219,7 +219,7 @@ vars1 == <<blocksToPropose, broadcastNetwork, broadcastRecord, buffer, dag,
 VARIABLE VVdag, Fame, DecidedFrames, FamousWitnesses, Votes 
 
 
-VVOrdering == INSTANCE OPODISHashgraph
+VVOrdering == INSTANCE VVOrderingProofs
    WITH r <- NumRound, 
         f <- f,
         c <- c,
