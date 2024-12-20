@@ -1,4 +1,4 @@
------------------------ MODULE HashgraphCompleteSpec -----------------------
+----------------------- MODULE HashgraphSpecification -----------------------
 
 
 
@@ -21,7 +21,8 @@ CONSTANTS EventSet,                    \* possible set of events
 
 ----------------------------------------------------------------------------
 ASSUME fAs == f \in Nat
-
+ASSUME rAs == r \in Nat
+ASSUME cAs == c \in Nat /\ c > 2
 ProcessSet == 1..(3*f+1)
 
 Frames == 1..r
@@ -142,19 +143,19 @@ TypeOK ==
   
 vars1 == <<witnessDAG, hashgraph, tip>>
 
-VARIABLE BAPWitnessDAG, Fame, DecidedFrames, FamousWitnesses, Votes 
+VARIABLE VVWitnessDAG, Fame, DecidedFrames, FamousWitnesses, Votes 
 
 vars == 
-  << witnessDAG, hashgraph, tip, BAPWitnessDAG, Fame, DecidedFrames, FamousWitnesses, Votes >>
+  << witnessDAG, hashgraph, tip, VVWitnessDAG, Fame, DecidedFrames, FamousWitnesses, Votes >>
   
 
-BAPOrdering == INSTANCE OPODISHashgraph
+VVOrdering == INSTANCE OPODISHashgraph
    WITH r <- r, 
         f <- f,
         c <- c,
         faulty <- faulty,
         WitnessSet <- WitnessSet,
-        WitnessDAG <- BAPWitnessDAG,
+        WitnessDAG <- VVWitnessDAG,
         Fame <- Fame,
         DecidedFrames <- DecidedFrames,
         FamousWitnesses <- FamousWitnesses,
@@ -167,7 +168,7 @@ Init ==
                        [x \in BlockIds |-> IF x = 1 /\ p = q THEN {Genesis(p)}
                                            ELSE {}]]]
   /\ tip = [p \in ProcessSet |-> Genesis(p)]
-  /\ BAPOrdering!Init
+  /\ VVOrdering!Init
   
 ---------------------------------------------------------------------------
 
@@ -177,7 +178,7 @@ FaultyChangeHashgraphTn(p, q, x, E) ==
    /\ p \in faulty
    /\ hashgraph' = [hashgraph EXCEPT ![p][q][x] = E]
    /\ UNCHANGED <<witnessDAG, tip>>
-   /\ UNCHANGED BAPOrdering!vars
+   /\ UNCHANGED VVOrdering!vars
    
 ---------------------------------------------------------------------------
 
@@ -204,7 +205,7 @@ ReceiveEventTn(e, p, z) ==
                                       THEN hashgraph[p][q][l] \cup {e}
                                       ELSE hashgraph[p][q][l]]]]
    /\ UNCHANGED <<witnessDAG>>
-   /\ UNCHANGED BAPOrdering!vars
+   /\ UNCHANGED VVOrdering!vars
 
 ---------------------------------------------------------------------------
 
@@ -217,21 +218,23 @@ DecideWitnessTn(e, p) ==
        [witnessDAG EXCEPT ![p][WitnessOfEvent(e).frame][WitnessOfEvent(e).source] 
           = witnessDAG[p][WitnessOfEvent(e).frame][WitnessOfEvent(e).source] 
               \cup {WitnessOfEvent(e)}]
-   /\  BAPOrdering!AddWitnessTn(p, WitnessOfEvent(e))
+   /\  VVOrdering!AddWitnessTn(p, WitnessOfEvent(e))
    /\ UNCHANGED <<hashgraph, tip>> 
 
 ---------------------------------------------------------------------------
+
+
 DecideFameTn(p, g, d) ==
   /\ UNCHANGED vars1
-  /\ BAPOrdering!DecideFameTn(p, g, d)
+  /\ VVOrdering!DecideFameTn(p, g, d)
 
 VoteTn(p, g, d) ==
   /\ UNCHANGED vars1
-  /\ BAPOrdering!VoteTn(p, g, d)  
+  /\ VVOrdering!VoteTn(p, g, d)  
 
 DecideFrameTn(p, u) ==
   /\ UNCHANGED vars1
-  /\ BAPOrdering!DecideFrameTn(p, u) 
+  /\ VVOrdering!DecideFrameTn(p, u) 
 
                      
 Next == 
@@ -249,7 +252,7 @@ Spec ==
 
 ---------------------------------------------------------------------------
 
-UniqueStronglyseen == 
+StronglySeenConsistency == 
   \A p \in ProcessSet, q \in ProcessSet, e \in WitnessSet, a \in WitnessSet: 
       (/\ p \notin faulty /\ q \notin faulty
        /\ a.frame = e.frame 
@@ -259,19 +262,14 @@ UniqueStronglyseen ==
        /\ \E l \in WitnessSet: /\ l \in witnessDAG[p][l.frame][l.source] 
                                /\ e \in l.stronglysees) => a = e
 
-UniqueStronglyseenBAP == 
-  \A p \in ProcessSet, q \in ProcessSet, e \in WitnessSet, a \in WitnessSet: 
-      (/\ p \notin faulty /\ q \notin faulty
-       /\ a.frame = e.frame 
-       /\ a.source = e.source 
-       /\ \E s \in WitnessSet: /\ s \in BAPWitnessDAG[q][s.frame][s.source] 
-                               /\ a \in s.stronglysees
-       /\ \E l \in WitnessSet: /\ l \in BAPWitnessDAG[p][l.frame][l.source] 
-                               /\ e \in l.stronglysees) => a = e
 
+Safety == \A p \in ProcessSet, q \in ProcessSet, x \in Frames:
+             p \notin faulty /\ q \notin faulty /\ DecidedFrames[p][x] /\ DecidedFrames[q][x] 
+          => FamousWitnesses[p][x] = FamousWitnesses[q][x]
 
-                               
-THEOREM Safety == Spec => []UniqueStronglyseen
+                                         
+THEOREM Safetyproof == Spec => []StronglySeenConsistency
+
 =============================================================================
 \* Modification History
 \* Last modified Tue Dec 10 17:56:26 AEDT 2024 by pgho0778
