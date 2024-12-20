@@ -1,4 +1,4 @@
-------------------------- MODULE UnreliableBcastCommunicationSpecification -------------------------
+------------------------- MODULE UnreliableStructuredDAGconstructionSpecification -------------------------
 
 EXTENDS FiniteSets,
         Integers,
